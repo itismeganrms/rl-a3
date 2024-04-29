@@ -82,12 +82,22 @@ The observation space is an 8-dimensional vector, the positional coordinates of 
 The policies we looked at in the previous papers were \emph{value-based}. This means that they looked at state-value pairs in the environment and approximated the rewards of such pairs using different exploration strategies like Boltzmann or Epsilon-Greedy. Policy based reinforcement learning are another genre of reinforcement learning algorithms. Used primarily in  continuous action space RL environments, policy-based reinforcement learning do not utilise a value function to determine the next best possible action. Instead, they use a parameterized policy. A value function may be used for learning the best policy, but not for selecting the action. The implemented policy is then improved, based on the data from each episode using policy gradient methods \cite{sutton-barlo}.
 The outline of policy-based algorithms is using a parameterized policy function, which is denoted by $\pi_\Theta$. 
 Here, $\theta$ refers to the parameters of the function and $\pi$ refers to the function itself. After defining the policy function, a path $\tau$ is chosen. If $\tau$ is good, then the parameters $\theta$ are increased towards the path $\tau$. Otherwise, it is decreased. In this way, it is maintained until the goal is reached.    \cite{plaat-deeprl}
-The various algorithms that were implemented to realise this approach are Actor-Critic, Actor-Critic with baseline subtraction, Actor-Critic with bootstrapping, Actor-Critic with bootstrapping and baseline subtraction and REINFORCE. These algorithms are discussed in detail below. 
+The various algorithms that were implemented to realise this approach are:
+\begin{itemize}
+\item REINFORCE
+\item Actor-Critic
+\item Actor-Critic with baseline subtraction
+\item Actor-Critic with bootstrapping
+\item Actor Critic with bootstrapping and baseline subtraction
+\end{itemize}
+These algorithms are discussed in detail below. 
 
 \subsection{REINFORCE}
 \quad REINFORCE is a commonly used classic Monte-Carlo Policy Gradient algorithm. It is termed Monte-Carlo because it learns from the collected episodes by estimating gradients throughout the agent trajectory. We can recall the policy function  $\pi_{\theta}(a,s)$ which indicates the probability of taking an action a in the state s with the parameters $\theta$.
-The REINFORCE algorithm optimises the policy function $\pi_{\theta}(a,s)$ by fine-tuning its parameters $\theta$ such that it increases the likelihood of actions with higher rewards. It does this by calculating the total expected rewards with respect to a particular parameter value $\theta$ and adjusting $\theta$ accordingly. Thus the parameters are updated as follows: 
-$\theta$ = $\theta$ + $\alpha$$\triangledown\theta J(\theta)$. % ad the triangel her e
+The REINFORCE algorithm optimises the policy function $\pi_{\theta}(a,s)$ by fine-tuning its parameters $\theta$ such that it increases the likelihood of actions with higher rewards. It does this by calculating the total expected rewards with respect to a particular parameter value $\theta$ and adjusting $\theta$ accordingly. Thus the parameters are updated as follows: \newline
+\begin{equation}
+\theta = \theta + \alpha\nabla\theta J(\theta). % ad the triangel her e
+\end{equation}
 
 where $\alpha$ is the learning rate, J($\theta$) is the expected return function which gives the total expected reward over all trajectories. 
 
