@@ -23,6 +23,6 @@ We explored 4 different Policy based Reinforcement Learning algorithms:
 - Swig 
 
 ### Installation
-- Clone the repository: git clone https://github.com/codes-by-pinewood/RL-assignment-2
+- Clone the repository: git clone [https://github.com/itismeganrms/rl-a3)
 - Install the relevant dependencies
   
