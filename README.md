@@ -9,10 +9,9 @@ The Lunar Lander environment is a classical rocket trajectory optimisation probl
 We explored 4 different Policy based Reinforcement Learning algorithms: 
 - Reinforce
 - Actor Critic
-- Actor Critic with bootstrapping
-- Actor Critic with baseline subtraction
-- Actor Critic with bootstrapping and baseline subtraction
-
+- Actor Critic with Bootstrapping
+- Actor Critic with Baseline Subtraction
+- Actor Critic with Bootstrapping and Baseline Subtraction
 
 ## Execution 
 ### Dependencies
@@ -20,7 +19,8 @@ We explored 4 different Policy based Reinforcement Learning algorithms:
 - OpenAI Gym
 - Pytorch 
 - NumPy
-- Swig 
+- Swig
+- Pygame
 
 ### Installation
 - Clone the repository: git clone [https://github.com/itismeganrms/rl-a3)
