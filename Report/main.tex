@@ -44,7 +44,13 @@ Assignment 3: Policy-based Reinforcement Learning}
 \end{abstract}
 
 \section {Introduction}
-In this paper we will delve into the Lunar Lander environment taken from the OpenAI Gym library. The Lunar Lander game is a classical reinforcement learning environment where the goal is to optimise the trajectory of a rocket such that it lands between the two flags. 
+In this paper we will delve into the Lunar Lander environment taken from the OpenAI Gym library. The Lunar Lander game is a classical reinforcement learning environment where the goal is to optimise the trajectory of a rocket such that it lands between the two flags.
+In this paper we delve into the implementation of DQN in the CartPole environment. The CartPole is a classical reinforcement learning environment where the goal is to balance a pole on the cart, while  applying forces to the cart at the bottom (as shown in Figure 1) \citep{brockman2016openai}. While a number of different techniques can be used to solve this problem, our paper specifically concentrates on the use of DQNs. Through this paper, we hope to provide the specifications of various DQN models while also including the various exploration strategies that provide us the best exploration-to-exploitation ratio and also optimal hyper-parameters that will yield the best results. Furthermore, we hope to provide an extensive ablation study to help identify the impact of adding and removing certain components (specifically, experience replay and target network) on DQN's performance. \newline
+
+\section{Framework}
+\label{Introduction and General Strategy}
+
+The CartPole environment poses unique challenges compared to the environments we have encountered previously. While the action space $A$ is still discrete with two potential actions (push left and push right), there is a continuous observation space/state space $S$ which includes the \textbf{cart position}, \textbf{cart velocity}, \textbf{pole angle} and \textbf{pole angular velocity}. A high-dimensional state space such as this makes the creation of a Q table/array storing the values for every state-action pair quickly infeasible. Thus, to tackle this problem we use DQNs which leverages the advantages of \emph{function approximation} to obtain q values. 
 
 \begin{figure}[htbp]
 \centering
@@ -133,25 +139,37 @@ Initialise $\theta$ arbitrarily\;\\
 \end{algorithm}
 
 
-As mentioned above, the parameters of the policy is defined by $\theta$. Therefore, the quality of such parameters for the state to action probabilities for the policy is given by $J(\theta)$. To improve the gradient, the differential of the parameters are taken. 
+%There are many variations of REINFORCE that can produce better results. 
 
-\newline The quality is given by $\mathbb{E}_\pi [ \sum _a q_\pi(S_t, a)\nabla_\pi(a|S_t, \theta)]$
+%As mentioned above, the parameters of the policy is defined by $\theta$. Therefore, the quality of such parameters for the state to action probabilities for the policy is given by $J(\theta)$. To improve the gradient, the differential of the parameters are taken. 
 
-\newline The update of these functions happen in a Monte-Carlo function i.e., random sample. The function is updated after an entire trajectory/path is completed. Therefore, this happens in an off-policy way.  
+%\newline The quality is given by $\mathbb{E}_\pi [ \sum _a q_\pi(S_t, a)\nabla_\pi(a|S_t, \theta)]$
+
+%\newline The update of these functions happen in a Monte-Carlo function i.e., random sample. The function is updated after an entire trajectory/path is completed. Therefore, this happens in an off-policy way.  
 
 \subsection{Actor-Critic Methods}
  Actor Critic methods are TD methods and have a separate memory structure to store the policy independent of the value function. Thus it has two  structures/neural networks: a policy structure known as an \emph{actor} and an estimated value function known as the \emph{critic}. While the actor follows the policy and takes actions according to the policy, the critic, typical of its name, criticises the actions taken by the actor in the form of a TD error. This scalar signal indicates whether the actions taken by the agent are better or worse than what the critic expected. The TD error can be evaluated as follows in the following equation: \newline
  $\delta_{t} = R_{t+1} + \gamma * V_t(S_{t+1})-V_t(S_t)$ \newline
  where $\delta_{t}$ is the temporal difference error at timestep $t$, $R_{t+1}$ is the reward for transitioning from state $S_t$ to the state $S_{t+1}$,  $\gamma$ is the discount factor, $V_{t}$ is the value function from the critic and $V_t(S_{t+1})$ is the estimated value of going to state $S_{t+1}$ while $V_t(S_t)$ is the estimated value of going to state $S_t$.  \newline 
- Thus, a positive TD error indicates that the transition from state $S_t$ to $S_{t+1}$ is fruitful/ has a postive reward while a negative TD error indicates that the transition from state  $S_t$ to $S_{t+1}$ to $S_{t+1}$ is not rewarding.
+ Thus, a positive TD error indicates that the transition from state $S_t$ to $S_{t+1}$ is fruitful/ has a positive reward while a negative TD error indicates that the transition from state  $S_t$ to $S_{t+1}$ to $S_{t+1}$ is not rewarding.
  \newline
 
+ 
 
-Unlike REINFORCE, Actor-critic Methods consists of two functions - the actor and the critic. The actor refers to the policy function and the critic refers to the value functions. Similar to an actor and a critic, the actor (policy) function focuses on the path to be taken, and the critic evaluates the said path, by computing the value function. 
-The focus on the algorithms is based on policy gradients. \cite{actor-critic}
+
 \newline As used in REINFORCE, the policy gradient is given by 
 \newline 
 $\nabla_\theta J(\theta) = \mathbb{E}_\pi[\sum _{t=0}^{T-1} \nabla_\theta log\pi_\theta (a_t|s_t)G_t]$
+
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.2\linewidth]{Report/images/actor_critic_no_bs.png}
+\caption{\label{fig:ActorCritic}The figure above shows the result of Actor Critic with different learning rates. As we can see, all learning rates show a rising trend of rewards, with the graph for learning rate 0.01 showing the most improvement}
+\end{figure}
+
+
+
 \subsubsection{Bootstrapping}
 Actor Critic with bootstrapping is a particular actor-critic algorithm that combines the benefits of both value based (using state-action pairs) and policy based methods. Thus the inclusion of elements from value-based reinforcement learning bootstraps or supports the policy-based traditional Actor-critic method by counteracting the low bias and high variance. It combines the advantage of having a low variance from the value method, and the advantage of having a high bias from the policy method.
 Similar to the traditional actor critic method, there is an actor who learns the policy and there is a critic which criticises/evaluates the rewards gained from following the policy (the value of particular state-action pairs Q(s,a)) . However, in the case of Actor Critic with bootstrapping, the critic uses bootstrapping to update the value Q of the state-action pairs, harking back to value-based methods. \newline 
