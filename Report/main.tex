@@ -56,7 +56,7 @@ In this paper we will delve into the Lunar Lander environment taken from the Ope
 
 %\label{Introduction and General Strategy}
 
-The Lunar Lander environment poses a number of unique challenges compared to the environments we have encountered previously. As shown in \emph{Table 1}, While the action space $A$ is still discrete with four potential actions (push left and push right), the observation space is an 8-dimensional vector, the positional coordinates of the lunar lander (x and y), its linear velocities in x and in y respectively, its angle, its angular velocities and two boolean values that represent whether each leg is in contact with the ground or not. The inclusion of a continuous action or state space makes tabular/value-based reinforcement learning algorithms quickly unfeasible as the cost of storing the values for each state-action pair makes our problem much more complex. \newline
+The Lunar Lander environment poses a number of unique challenges compared to the environments we have encountered previously. As shown in \emph{Table 1}, While the action space $A$ is still discrete with four potential actions, the observation space is an 8-dimensional vector, the positional coordinates of the lunar lander (x and y), its linear velocities in x and in y respectively, its angle, its angular velocities and two boolean values that represent whether each leg is in contact with the ground or not. The inclusion of a continuous action or state space makes tabular/value-based reinforcement learning algorithms quickly unfeasible as the cost of storing the values for each state-action pair makes our problem much more complex. \newline
 Thus, to tackle this problem we use Policy Gradient methods which can handle continuous state and action spaces much better as they directly optimise the expected return and can output continuous action distributions, making them also suitable for continuous action spaces. Furthermore, since Policy Gradient methods do not need state-action pairs to approximate values they do not run the risk of getting stuck in local optima like value-based methods and can approximate complex non-linear relationships more accurately than value-based algorithms.
 
 \begin{table}[htbp]
@@ -81,7 +81,7 @@ Thus, to tackle this problem we use Policy Gradient methods which can handle con
 
 
 \section{Framework}
-For our implementation of Policy Gradient Methods, we used the Python \textbf{Pytorch} package. Our initial structure is as follows: an input layer of size 8 corresponding to the size of the observation space. This input layer feeds into a first hidden layer with 128 nodes. This then feeds into a hidden layer comprising of 128 nodes which finally outputs to a layer comprising of 1 node representing the action that should be taken. Since the Lunar Lander environment is also highly stochastic and affected by noise, to reduce noise in our graphs we computed different algorithms over 1000 episodes and averaged the results every 5 episodes to capture the general trends. Furthermore, we are aware that total rewards is not always the best parameter to measure algorithm accuracy as the number of timesteps in each episode may differ and lead to exploding or shrinking rewards. Thus, we also include another parameter to measure accuracy which is the number of timesteps.
+For our implementation of Policy Gradient Methods, we used the Python \textbf{Pytorch} package. Our initial structure is as follows: an input layer of size 8 corresponding to the size of the observation space. This input layer feeds into a first hidden layer with 128 nodes. This then feeds into a hidden layer comprising of 128 nodes which finally outputs to a layer comprising of 1 node representing the action that should be taken. Since the Lunar Lander environment is also highly stochastic and affected by noise, to reduce noise in our graphs we computed different algorithms over 1000 episodes and averaged the results every 5 episodes to capture the general trends. Furthermore, we are aware that total rewards is not always the best parameter to measure algorithm accuracy as the number of timesteps in each episode may differ and lead to exploding or shrinking rewards. Thus, in some cases we also include another parameter to measure accuracy which is the number of timesteps.
 
 %In this section we experiment with various hyper-parameters such as batch size, learning rates and more while also fine-tuning our neural network by modifying the number of hidden layers and neurons in each layer.% Since this environment is also highly stochastic, we de-noise by testing over 1000 episodes and averaging our results over every 10 episodes.
 %For 
@@ -122,27 +122,28 @@ where
 The equation above helps us recall the policy function $\pi_{\theta}(a, s)$ which indicates the probability of taking an action a in the state s with the parameters $\theta$.
 We can also define a trajectory $\tau$ as the sum of rewards when following a particular path. This is shown in the equation below.
 \begin{equation}
-\R_\tau(a, s) = Pr(A_t = a | St = s, \theta_t = \theta)
+R(\tau) = [\sum_{t=0}^{T-1}r_t] 
 \end{equation}
 
-
-\par The REINFORCE algorithm optimises the policy function $\pi_{\theta}(a,s)$ by fine-tuning its parameters $\theta$ such that it increases the likelihood of actions in trajectories $\tau$ which lead to higher cumulative rewards. It does this by calculating the total expected rewards J($\theta$) with respect to a particular parameter value $\theta$ and adjusting $\theta$ accordingly. The formula for J($\theta$) is shown in equation 2.
+\par The REINFORCE algorithm optimises the policy function $\pi_{\theta}(a,s)$ by fine-tuning its parameters $\theta$ such that it increases the likelihood of actions in trajectories $\tau$ which lead to higher cumulative rewards. It does this by calculating the total expected rewards J($\theta$) with respect to a particular parameter value $\theta$ and adjusting $\theta$ accordingly. Thus, J($\theta$) is optimised as shown in equation 2.
 \begin{equation}
-J(\theta) = E[ \sum_{t=0}^{T-1}r_t + 1] 
+\nabla J(\theta) = E\pi_\theta[ R(\tau)] =   E\pi_\theta (\sum_{t=0}^{T-1} \nabla log\pi_\theta(a_t s_t) R(\tau)]
 \end{equation}
 
-where $r_{t}$ indicates the reward obtained at time t for executing a certain action $a_t$ at state $s_t$.
-Thus $\theta$ is optimised to be equal to the gradient ascent of the partial derivative with respect to $\theta$ of $J(\theta)$. The equation for optimisation is shown below.
-\begin{equation}
-\theta = \theta + \frac{\mathrm{d}  }{\mathrm{d} \theta} J(\theta)
-\end{equation}
-Based on this, the expected cumulative rewards is updated. The algorithm for REINFORCE can thus be defined as follows. 
+where $\nabla J(\theta)$ represents the gradient in the expected return function J($\theta$), E$\pi_\theta$ denotes the expectation over trajectories R sampled under policy $\pi_theta$, $R_{tau}$ indicates the rewards obtained from the trajectory $\tau$ and $\pi_\theta$ indicates the policy function with parameters $\theta$.  \newline
+%Thus $\theta$ is optimised to be equal to the gradient ascent of the partial derivative with respect to $\theta$ of $J(\theta)$. The equation for optimisation is shown below.
+%\begin{equation}
+%\theta = \theta + \frac{\mathrm{d}  }{\mathrm{d} \theta} J(\theta)
+%\end{equation}
+%Based on this, the expected cumulative rewards is updated.
+
+The algorithm for REINFORCE can thus be defined as follows. 
 \begin{algorithm}[htbp]
 \caption{REINFORCE Algorithm}
 \SetAlgoLined
 \DontPrintSemicolon
 \small % Set font size to small
-\KwData{parameter $\theta$, policy function $\pi_\theta$, maximum timesteps $T$, number of episodes $E$, learning_rate \alpha }
+\KwData{parameter $\theta$, policy function $\pi_\theta$, maximum timesteps $T$, number of episodes $E$, learning_rate $\alpha$ }
 \KwResult{Selected action}
 Initialise $\theta$ arbitrarily\;\\
 \For{$e = 1$ \KwTo $E$}{
@@ -151,7 +152,7 @@ Initialise $\theta$ arbitrarily\;\\
     {
      \item Sample action $a$ from $\pi_\theta$\;
      \item Execute action $a$ and get the next state $s_{t+1}$ and  reward $r_t$\; 
-     \item \theta \leftarrow \theta + \alpha * \nabla_\theta log \pi_\theta(s_t, a_t) v_t ;
+     \item $\theta \leftarrow \theta + \alpha \cdot \nabla_\theta \log \pi_\theta(a_t | s_t) R(\tau)$;
     }
 }
 Return parameter $\theta$
@@ -188,22 +189,7 @@ Figure 2 and 3 shows our results for REINFORCE without entropy regularisation. W
 \caption{\label{fig:ReinforceEntropy Rewards}The figure above shows the total steps of REINFORCE with entropy regularisation with different learning rates. As we can see, all learning rates show a rising trend of rewards, with the graph for learning rates 0.01 and 0.001 showing the most improvement and the learning rate 0.1 stabilising but not showing much improvement. }
 \end{figure}
 
-
-
-
-
-%The a
-
-% ere are many variations of the algorithm that help improve results and provide faster convergence. 
-
-
-%There are many variations of REINFORCE that can produce better results. 
-
-%As mentioned above, the parameters of the policy is defined by $\theta$. Therefore, the quality of such parameters for the state to action probabilities for the policy is given by $J(\theta)$. To improve the gradient, the differential of the parameters are taken. 
-
-%\newline The quality is given by $\mathbb{E}_\pi [ \sum _a q_\pi(S_t, a)\nabla_\pi(a|S_t, \theta)]$
-
-%\newline The update of these functions happen in a Monte-Carlo function i.e., random sample. The function is updated after an entire trajectory/path is completed. Therefore, this happens in an off-policy way.  
+  
 
 \subsection{Actor-Critic Methods}
 Actor Critic methods are TD methods and have a separate memory structure to store the policy independent of the value function. Thus it has two structures/neural networks: a policy structure known as an \emph{actor} and an estimated value function known as the \emph{critic}. While the actor follows the policy and takes actions according to the policy, the critic, typical of its name, criticises the actions taken by the actor in the form of a TD error. This scalar signal indicates whether the actions taken by the agent are better or worse than what the critic expected. 
