@@ -127,10 +127,10 @@ R(\tau) = [\sum_{t=0}^{T-1}r_t]
 
 \par The REINFORCE algorithm optimises the policy function $\pi_{\theta}(a,s)$ by fine-tuning its parameters $\theta$ such that it increases the likelihood of actions in trajectories $\tau$ which lead to higher cumulative rewards. It does this by calculating the total expected rewards J($\theta$) with respect to a particular parameter value $\theta$ and adjusting $\theta$ accordingly. Thus, J($\theta$) is optimised as shown in equation 2.
 \begin{equation}
-\nabla J(\theta) = E\pi_\theta[ R(\tau)] =   E\pi_\theta (\sum_{t=0}^{T-1} \nabla log\pi_\theta(a_t s_t) R(\tau)]
+\nabla J(\theta) = E_{\pi_\theta}[ R(\tau)] =   E_{\pi_\theta} (\sum_{t=0}^{T-1} \nabla log\pi_\theta(a_t s_t) R(\tau)]
 \end{equation}
 
-where $\nabla J(\theta)$ represents the gradient in the expected return function J($\theta$), E$\pi_\theta$ denotes the expectation over trajectories R sampled under policy $\pi_theta$, $R_{tau}$ indicates the rewards obtained from the trajectory $\tau$ and $\pi_\theta$ indicates the policy function with parameters $\theta$.  \newline
+where $\nabla J(\theta)$ represents the gradient in the expected return function J($\theta$), E$\pi_\theta$ denotes the expectation over trajectories R sampled under policy $\pi_\theta$, $R_{\tau}$ indicates the rewards obtained from the trajectory $\tau$ and $\pi_\theta$ indicates the policy function with parameters $\theta$.  \newline
 %Thus $\theta$ is optimised to be equal to the gradient ascent of the partial derivative with respect to $\theta$ of $J(\theta)$. The equation for optimisation is shown below.
 %\begin{equation}
 %\theta = \theta + \frac{\mathrm{d}  }{\mathrm{d} \theta} J(\theta)
@@ -170,7 +170,7 @@ The results of REINFORCE without entropy regularisation can be seen below.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\linewidth]{Report/images/reinforce_basic_image2.png}
-\caption{\label{fig:ReinforceEntropy Rewards}The figure above shows the steps of REINFORCE without entropy regularisation with different learning rates. As we can see, almost learning rates show a rising trend of steps, with the graph for learning rates 0.01 and 0.001 showing the most promise. }
+\caption{\label{fig:ReinforceEntropy_Rewards}The figure above shows the steps of REINFORCE without entropy regularisation with different learning rates. As we can see, almost learning rates show a rising trend of steps, with the graph for learning rates 0.01 and 0.001 showing the most promise. }
 \end{figure}
 
 
@@ -179,20 +179,20 @@ Figure 2 and 3 shows our results for REINFORCE without entropy regularisation. W
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\linewidth]{Report/images/entropy_regularisation.png}
-\caption{\label{fig:ReinforceEntropy Rewards}The figure above shows the rewards of REINFORCE with entropy regularisation with different learning rates. As we can see, all learning rates show a rising trend of rewards, with the graph for learning rates 0.01 and 0.001 showing the most improvement and the learning rate 0.1 stabilising but not showing much improvement. }
+\caption{\label{fig:ReinforceEntropy_Rewards_LR}The figure above shows the rewards of REINFORCE with entropy regularisation with different learning rates. As we can see, all learning rates show a rising trend of rewards, with the graph for learning rates 0.01 and 0.001 showing the most improvement and the learning rate 0.1 stabilising but not showing much improvement. }
 \end{figure}
 
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\linewidth]{Report/images/entropy_regularisation_2.png}
-\caption{\label{fig:ReinforceEntropy Rewards}The figure above shows the total steps of REINFORCE with entropy regularisation with different learning rates. As we can see, all learning rates show a rising trend of rewards, with the graph for learning rates 0.01 and 0.001 showing the most improvement and the learning rate 0.1 stabilising but not showing much improvement. }
+\caption{\label{fig:ReinforceEntropy_Rewards_Steps}The figure above shows the total steps of REINFORCE with entropy regularisation with different learning rates. As we can see, all learning rates show a rising trend of rewards, with the graph for learning rates 0.01 and 0.001 showing the most improvement and the learning rate 0.1 stabilising but not showing much improvement. }
 \end{figure}
 
   
 
 \subsection{Actor-Critic Methods}
-Actor Critic methods are TD methods and have a separate memory structure to store the policy independent of the value function. Thus it has two structures/neural networks: a policy structure known as an \emph{actor} and an estimated value function known as the \emph{critic}. While the actor follows the policy and takes actions according to the policy, the critic, typical of its name, criticises the actions taken by the actor in the form of a TD error. This scalar signal indicates whether the actions taken by the agent are better or worse than what the critic expected. 
+Actor Critic methods are Temporal Difference methods and have a separate memory structure to store the policy function independent of the value function. They generally have two neural networks: a policy structure known as an \emph{actor} and an estimated value function known as the \emph{critic}. While the policy function (or actor) returns a probability distribution of actions that can be taken in specific states, a value function (or the critic) determines the expected reward gained by following the policy. Thus the value function is called a critic as it criticises the actions taken by the actor in the form of a TD error. This scalar signal indicates whether the actions taken by the agent are better or worse than what the critic expected. 
 \par The TD error can be evaluated as follows in the following equation
 \begin{equation*}
 \delta_{t} = R_{t+1} + \gamma * V_t(S_{t+1})-V_t(S_t)
@@ -202,31 +202,29 @@ Actor Critic methods are TD methods and have a separate memory structure to stor
 \renewcommand\labelitemi{.}
 \item $\delta_{t}$ is the temporal difference error at timestep $t$
 \item $R_{t+1}$ is the reward for transitioning from state $S_t$ to the state $S_{t+1}$
-\item $\gamma$ is the discount factor
-\item $V_{t}$ is the value function from the critic
-\item $V_t(S_{t+1})$ is the estimated value of going to state $S_{t+1}$
-\item $V_t(S_t)$ is the estimated value of going to state $S_t$
+\item $\gamma$ is the discount factor which discounts future rewards
+\item $V_t(S_{t+1})$ is the estimated value of going to state $S_{t+1}$ at timestep t according to the critic. This represents the estimated cumulative rewards that can be gained from step $S_{t+1}$ onwards.
+\item $V_t(S_t)$ is the estimated value of going to state $S_t$ according to the critic. This represents the estimated total rewards that can be gained from step $S_{t}$ onwards.
 \end{itemize}
-Thus, a positive TD error indicates that the transition from state $S_t$ to $S_{t+1}$ is fruitful/ has a positive reward while a negative TD error indicates that the transition from state $S_t$ to $S_{t+1}$ is not rewarding.
- \newline
-\newline As used in REINFORCE, the policy gradient is given by 
-\newline 
-\begin{equation*}
-\nabla_\theta J(\theta) = \mathbb{E}_\pi[\sum _{t=0}^{T-1} \nabla_\theta log\pi_\theta (a_t|s_t)G_t]
-\end{equation*}
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=1.0\linewidth]{Report/images/actor_critic_no_bs.png}
-\caption{\label{fig:ActorCritic for different learning rates}The figure above shows the result of Actor Critic with different learning rates. As we can see, all learning rates show a rising trend of rewards, with the graph for learning rate 0.01 showing the most improvement}
-\end{figure}
+Thus, a positive TD error ($\delta_{t}$ \textgreater 0) indicates that the value of transitioning from state $S_t$ to $S_{t+1}$ is greater than expected and thus the action responsible should be taken more often. On the other hand a negative TD error ($\delta_{t}$ \textless 0) indicates that the value of transitioning from state $S_t$ to $S_{t+1}$ is lesser than expected and thus the action responsible should be avoided in the future. Thus, through this iterative process of updating the TD error the Actor Critic algorithm tends to strike a balance between exploration and exploitation. The actor explores the state space and taking more diverse actions and the critic evaluating the consequences of the actions. When the actions are more risky and produce lesser expected returns the TD error is negative and when they are more fruitful and produce higher expected returns the TD error is positive.
 
+
+% \newline
+%\newline As used in REINFORCE, the policy gradient is given by 
+%\newline 
+%\begin{equation*}
+%\nabla_\theta J(\theta) = \mathbb{E}_\pi[\sum _{t=0}^{T-1} \nabla_\theta log\pi_\theta (a_t|s_t)G_t]
+%\end{equation*}
+%\begin{figure}[htbp]
+%\centering
+In the REINFORCE algorithm, because the entire episode must be sampled, its variance is high. The Actor Critic method combines value-based and policy-based methods, achieving both low variance and low bias. The Actor Critic method incorporates the bootstrapping technique to improve estimates of cumulative rewards. By using bootstrapping, the Actor Critic method can use the Critic's immediate feedback to adjust the Actor's strategy, thus achieving a better balance between exploring the environment and learning optimized action strategies.
 
 
 \subsubsection{Bootstrapping}
-\par Actor Critic with bootstrapping is a particular actor-critic algorithm that combines the benefits of both value based (using state-action pairs) and policy based methods. Thus the inclusion of elements from value-based reinforcement learning bootstraps or supports the policy-based traditional Actor-critic method by counteracting the low bias and high variance. It combines the advantage of having a low variance from the value method, and the advantage of having a high bias from the policy method.
-\par Similar to the traditional actor critic method, there is an actor who learns the policy and there is a critic which criticises/evaluates the rewards gained from following the policy (the value of particular state-action pairs Q(s,a)) . However, in the case of Actor Critic with bootstrapping, the critic uses bootstrapping to update the value Q of the state-action pairs, harking back to value-based methods. \newline 
-particular state-action pairs  the actions taken by the agent in the form of a TD error. However, the critic 
-However, there might be high variance in the rewards and gradient estimate. To counteract this, bootstrapping is used.
+\par A variation of Actor-Critic incorporates a boot-strapping technique.  In the REINFORCE algorithm, because the entire episode must be sampled, its variance is high. The Actor Critic method combines value-based and policy-based methods, achieving both low variance and low bias. The Actor Critic method incorporates the bootstrapping technique to improve estimates of cumulative rewards. By using bootstrapping, the Actor Critic method can use the Critic's immediate feedback to adjust the Actor's strategy, thus achieving a better balance between exploring the environment and learning optimized action strategies.
+\par Similar to the traditional actor critic method, there is an actor who learns the policy and there is a critic which criticises/evaluates the rewards gained from following the policy (the value of particular state-action pairs Q(s,a)) . However, in the case of Actor Critic with bootstrapping, the critic uses bootstrapping to update the value Q of the state-action pairs, harking back to value-based methods. 
+
+The algorithm for Actor-Critic with Bootstrapping is given below \cite{plaat-deeprl}
 \begin{algorithm}[htbp]
 \caption{Actor-Critic with Bootstrapping}
 \SetAlgoLined
@@ -235,20 +233,43 @@ However, there might be high variance in the rewards and gradient estimate. To c
 \KwData{parameter $\theta$, policy function $\pi_\theta$, maximum timesteps $T$, number of episodes $E$, estimation depth $n$, learning rate $\alpha$, value function $V_\phi (s)$}
 \KwResult{Selected action}
 Initialise $\theta$ and $\phi$ arbitrarily\;\\
-\For{$e = 1$ \KwTo $E$}
+\For{$e \in 1$ \KwTo $E$}
 {
-    Initialise state $s$\;
-     \item Sample trajectory $\tau$ for $\pi_\theta$
-     \item
+    \item Initialise state $s$\;
+    \item Sample trajectory $\tau$ = ${s_0,a_0,r_1,....,s_T}$ for $\pi_\theta(a|s)$
+     \item 
     \For{$t = 1$ \KwTo $T-1$}
     {
-     \item Compute cumulative reward $\hat{Q}_n(s_t,a_t)$  for the n-step target
+     \item Compute cumulative reward $\hat{Q}_n(s_t,a_t)$ for the n-step target
+     \newline \(\hat{Q}^(s_t,a_t) = \sum_{k=0}^{n-1}\gamma^k\cdot r_{t+k} + \gamma_n \cdot V_\phi (s_{t+n})\)
     }
     \item Compute descent advantage loss $\phi$
     \item Compute ascent policy gradient $\theta$
 }
-return parameter $\theta$\;
+\State \Return parameter $\theta$
 \end{algorithm}
+
+\begin{figure}[htbp]
+    \centering
+\includegraphics[width=0.9\linewidth]{Report/images/Performance_of_Actor_Critic_BS_LR.png}
+\caption{\label{fig:ActorCritic for different learning rates}The figure above shows the result of Actor Critic with different learning rates. As we can see, all learning rates show a rising trend of rewards, with the graph for learning rate 0.01 showing the most improvement}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\linewidth]{Report/images/Performance_of_Actor_Critic_BS_Neurons.png}
+\caption{\label{fig:ActorCritic for different Neurons}The figure above shows the result of Actor Critic with different neurons. }
+\end{figure}
+
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\linewidth]{Report/images/Performance_of_Actor_Critic_BS_Layers.png}
+\caption{\label{fig:ActorCritic for different Hidden Layers}The figure above shows the result of Actor Critic with different hidden layers}
+\end{figure}
+
+
+
 
 \subsubsection{Baseline Subtraction}
 Actor-Critic algorithms could also employ baseline subtraction which is a technique used to reduce the variance by using a baseline. We recall the previous policy gradient function denoted by 
@@ -275,12 +296,12 @@ Initialise $\theta$ and $\phi$ arbitrarily\;\\
     \For{$t = 1$ \KwTo $T-1$}
     {
      \item Compute advantage function using the cumulative reward and the value function;
-     \hat{A}_n(s_t,a_t) = \hat{Q}_n(s_t,a_t) - V_\phi(s_t)
+     \(\hat{A}_n(s_t,a_t) = \hat{Q}_n(s_t,a_t) - V_\phi(s_t)\)
     }
     \item Compute descent advantage loss $\phi$
     \item Compute ascent policy gradient $\theta$
 }
-return parameter $\theta$\;
+\State \Return parameter $\theta$
 \end{algorithm}
 \subsubsection{Bootstrapping and Baseline Subtraction}
 Actor-Critic algorithms combine both Bootstrapping and Baseline Subtraction
@@ -309,12 +330,12 @@ Initialise $\theta$ and $\phi$ arbitrarily\;\\
     {
      \item Compute cumulative reward $\hat{Q}_n(s_t,a_t)$  for the n-step target
      \item Compute advantage function using the cumulative reward and the value function;
-     \hat{A}_n(s_t,a_t) = \hat{Q}_n(s_t,a_t) - V_\phi(s_t)
+     \(\hat{A}_n(s_t,a_t) = \hat{Q}_n(s_t,a_t) - V_\phi(s_t)\)
     }
     \item Compute descent advantage loss $\phi$
     \item Compute ascent policy gradient $\theta$
 }
-return parameter $\theta$\;
+\State \Return parameter $\theta$
 \end{algorithm}
 \begin{figure}[htbp]
 \centering
@@ -325,14 +346,15 @@ return parameter $\theta$\;
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\linewidth]{Report/images/Performance_of_Actor_Critic_BSandBS_Neurons.png}
-\caption{\label{fig:ActorCriticBS2-different neurons}The figure above shows the result of Actor Critic with different learning rates. As we can see, all learning rates show a rising trend of rewards, with the graph for learning rate 0.01 showing the most improvement}
+\caption{\label{fig:ActorCriticBS2-different neurons}The figure above shows the result of Actor Critic with different number of neurons}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.9\linewidth]{Report/images/Performance_of_Actor_Critic_BS_Layers.png}
-\caption{\label{fig:ActorCriticBS2-different hidden layers}The figure above shows the result of Actor Critic with different learning rates. As we can see, all learning rates show a rising trend of rewards, with the graph for learning rate 0.01 showing the most improvement}
+\includegraphics[width=0.9\linewidth]{Report/images/Performance_of_Actor_Critic_BSandBS_Layers.png}
+\caption{\label{fig:ActorCriticBS2-different hidden layers}The figure above shows the result of Actor Critic with different hidden layers}
 \end{figure}
+
 
 \section{Goals Achieved}
 \subsection{Effects of policy gradients on variance}
