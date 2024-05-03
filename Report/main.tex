@@ -94,7 +94,6 @@ There are a number of different policy-based reinforcement learning algorithms. 
 
 \begin{itemize}[itemsep=0pt]
 \item REINFORCE
-\item Actor-Critic
 \item Actor-Critic with Bootstrapping
 \item Actor-Critic with Baseline Subtraction
 \item Actor Critic with Bootstrapping and Baseline Subtraction
@@ -192,7 +191,8 @@ Figure 2 and 3 shows our results for REINFORCE without entropy regularisation. W
   
 
 \subsection{Actor-Critic Methods}
-Actor Critic methods are Temporal Difference methods and have a separate memory structure to store the policy function independent of the value function. They generally have two neural networks: a policy structure known as an \emph{actor} and an estimated value function known as the \emph{critic}. While the policy function (or actor) returns a probability distribution of actions that can be taken in specific states, a value function (or the critic) determines the expected reward gained by following the policy. Thus the value function is called a critic as it criticises the actions taken by the actor in the form of a TD error. This scalar signal indicates whether the actions taken by the agent are better or worse than what the critic expected. 
+\par In the REINFORCE algorithm, because the entire episode must be sampled, its variance is high. The Actor Critic method combines value-based and policy-based methods, achieving both low variance and low bias. 
+\par Actor Critic methods are Temporal Difference methods and have a separate memory structure to store the policy function independent of the value function. They generally have two neural networks: a policy structure known as an \emph{actor} and an estimated value function known as the \emph{critic}. While the policy function (or actor) returns a probability distribution of actions that can be taken in specific states, a value function (or the critic) determines the expected reward gained by following the policy. Thus the value function is called a critic as it criticises the actions taken by the actor in the form of a TD error. This scalar signal indicates whether the actions taken by the agent are better or worse than what the critic expected. 
 \par The TD error can be evaluated as follows in the following equation
 \begin{equation*}
 \delta_{t} = R_{t+1} + \gamma * V_t(S_{t+1})-V_t(S_t)
@@ -208,22 +208,19 @@ Actor Critic methods are Temporal Difference methods and have a separate memory 
 \end{itemize}
 Thus, a positive TD error ($\delta_{t}$ \textgreater 0) indicates that the value of transitioning from state $S_t$ to $S_{t+1}$ is greater than expected and thus the action responsible should be taken more often. On the other hand a negative TD error ($\delta_{t}$ \textless 0) indicates that the value of transitioning from state $S_t$ to $S_{t+1}$ is lesser than expected and thus the action responsible should be avoided in the future. Thus, through this iterative process of updating the TD error the Actor Critic algorithm tends to strike a balance between exploration and exploitation. The actor explores the state space and taking more diverse actions and the critic evaluating the consequences of the actions. When the actions are more risky and produce lesser expected returns the TD error is negative and when they are more fruitful and produce higher expected returns the TD error is positive.
 
-
-% \newline
-%\newline As used in REINFORCE, the policy gradient is given by 
-%\newline 
-%\begin{equation*}
-%\nabla_\theta J(\theta) = \mathbb{E}_\pi[\sum _{t=0}^{T-1} \nabla_\theta log\pi_\theta (a_t|s_t)G_t]
-%\end{equation*}
-%\begin{figure}[htbp]
-%\centering
-In the REINFORCE algorithm, because the entire episode must be sampled, its variance is high. The Actor Critic method combines value-based and policy-based methods, achieving both low variance and low bias. The Actor Critic method incorporates the bootstrapping technique to improve estimates of cumulative rewards. By using bootstrapping, the Actor Critic method can use the Critic's immediate feedback to adjust the Actor's strategy, thus achieving a better balance between exploring the environment and learning optimized action strategies.
-
-
 \subsubsection{Bootstrapping}
-\par A variation of Actor-Critic incorporates a boot-strapping technique.  In the REINFORCE algorithm, because the entire episode must be sampled, its variance is high. The Actor Critic method combines value-based and policy-based methods, achieving both low variance and low bias. The Actor Critic method incorporates the bootstrapping technique to improve estimates of cumulative rewards. By using bootstrapping, the Actor Critic method can use the Critic's immediate feedback to adjust the Actor's strategy, thus achieving a better balance between exploring the environment and learning optimized action strategies.
-\par Similar to the traditional actor critic method, there is an actor who learns the policy and there is a critic which criticises/evaluates the rewards gained from following the policy (the value of particular state-action pairs Q(s,a)) . However, in the case of Actor Critic with bootstrapping, the critic uses bootstrapping to update the value Q of the state-action pairs, harking back to value-based methods. 
-
+%\par A variation of Actor-Critic incorporates a bootstrapping technique. In the REINFORCE algorithm, because the entire episode must be sampled, its variance is high. The Actor Critic method combines value-based and policy-based methods, achieving both low variance and low bias. The Actor Critic method incorporates the bootstrapping technique to improve estimates of cumulative rewards. By using bootstrapping, the Actor Critic method can use the Critic's immediate feedback to adjust the Actor's strategy, thus achieving a better balance between exploring the environment and learning optimized action strategies.. 
+\par A variation of Actor-Critic incorporates a bootstrapping technique. In this scenario, the critic uses bootstrapping to update the value Q of the state-action pairs, harking back to value-based methods. This improve estimates of cumulative rewards. 
+\par By using bootstrapping, the Actor Critic method can use the Critic's immediate feedback to adjust the Actor's strategy, thus achieving a better balance between exploring the environment and learning optimized action strategies.
+The descent advantage loss allows the actor to choose the actions that outperform the baseline, while the ascent policy gradient drives policy updates to maximize the cumulative reward.
+\par Descent Advantage Loss is given by
+\begin{equation*}
+\phi \leftarrow \phi - \alpha * \nabla_\phi\Sigma_t(\hat{A}_n(s_t,a_t))^2
+\end{equation*}
+Ascent Policy Gradient is given by
+\begin{equation*}
+\theta \leftarrow \theta + \alpha * \Sigma_t[\hat{A}_n(s_t,a_t)*\nabla_\theta\log\pi_\theta(a_t|s_t)]
+\end{equation*}
 The algorithm for Actor-Critic with Bootstrapping is given below \cite{plaat-deeprl}
 \begin{algorithm}[htbp]
 \caption{Actor-Critic with Bootstrapping}
@@ -260,8 +257,7 @@ Initialise $\theta$ and $\phi$ arbitrarily\;\\
 \includegraphics[width=0.9\linewidth]{Report/images/Performance_of_Actor_Critic_BS_Neurons.png}
 \caption{\label{fig:ActorCritic for different Neurons}The figure above shows the result of Actor Critic with different neurons. }
 \end{figure}
-
-
+filler text in between to fix the alignment
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\linewidth]{Report/images/Performance_of_Actor_Critic_BS_Layers.png}
@@ -305,14 +301,7 @@ Initialise $\theta$ and $\phi$ arbitrarily\;\\
 \end{algorithm}
 \subsubsection{Bootstrapping and Baseline Subtraction}
 Actor-Critic algorithms combine both Bootstrapping and Baseline Subtraction
-\par Descent Advantage Loss is calculated as
-\begin{equation*}
-\phi \leftarrow \phi - \alpha * \nabla_\phi\Sigma_t(\hat{A}_n(s_t,a_t))^2
-\end{equation*}
-Ascent Policy Gradient is calculated as
-\begin{equation*}
-\theta \leftarrow \theta + \alpha * \Sigma_t[\hat{A}_n(s_t,a_t)*\nabla_\theta\log\pi_\theta(a_t|s_t)]
-\end{equation*}
+
 \begin{algorithm}[htbp]
 \caption{Actor-Critic with Bootstrapping and Baseline Subtraction}
 \SetAlgoLined
@@ -355,6 +344,7 @@ Initialise $\theta$ and $\phi$ arbitrarily\;\\
 \caption{\label{fig:ActorCriticBS2-different hidden layers}The figure above shows the result of Actor Critic with different hidden layers}
 \end{figure}
 
+filler text to fix the alignment
 
 \section{Goals Achieved}
 \subsection{Effects of policy gradients on variance}
