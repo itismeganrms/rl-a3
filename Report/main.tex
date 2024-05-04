@@ -50,7 +50,7 @@ In this paper we will delve into the Lunar Lander environment taken from the Ope
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.7\linewidth]{Report/images/visualisation.png}
+\includegraphics[width=0.7\linewidth]{Report/images/01.visualisation.png}
 \caption{\label{fig:Visualization of the Cart-pole} A visualisation of the Lunar Lander problem}
 \end{figure}
 
@@ -168,28 +168,28 @@ Return parameter $\theta$
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.9\linewidth]{Report/images/Rewards_of_REINFORCE_without_ER.png}
+\includegraphics[width=0.9\linewidth]{Report/images/02.Rewards_of_REINFORCE_without_ER.png}
 \caption{\label{fig:Reinforce Rewards}The figure above shows the rewards of REINFORCE without entropy regularisation with different learning rates. As we can see, almost learning rates show a rising trend of rewards, with the graph for learning rates 0.01 and 0.001 showing the most promise. }
 \end{figure}
 
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.9\linewidth]{Report/images/Steps_of_REINFORCE_without_ER.png}
+\includegraphics[width=0.9\linewidth]{Report/images/03.Steps_of_REINFORCE_without_ER.png}
 \caption{\label{fig:ReinforceEntropy_Rewards}The figure above shows the steps of REINFORCE without entropy regularisation with different learning rates. As we can see, almost learning rates show a rising trend of steps, with the graph for learning rates 0.01 and 0.001 showing the most promise. }
 \end{figure}
 \par Figure 2 and 3 shows our results for REINFORCE without entropy regularisation. While REINFORCE is touted as a simpler Policy Gradient method it can often suffer from high variances causing slower convergence to optimal values because it requires an entire episode to be sampled. This is very visible from the results. Even after an average results of over 1000 episodes, we are unable to see a dramatic rise in learning as we expected. However, we can see the effect of learning rate on model performance as learning rates of 0.001 and 0.01 outperform learning rate of 0.1. 
 
 \begin{figure}[!h]
 \centering
-\includegraphics[width=0.9\linewidth]{Report/images/entropy_regularisation.png}
+\includegraphics[width=0.9\linewidth]{Report/images/04.Performance_of_REINFORCE_with_ER_Rewards.png}
 \caption{\label{fig:ReinforceEntropy_Rewards_LR}The figure above shows the rewards of REINFORCE with entropy regularisation with different learning rates. As we can see, all learning rates show a rising trend of rewards, with the graph for learning rates 0.01 and 0.001 showing the most improvement and the learning rate 0.1 stabilising but not showing much improvement. }
 \end{figure}
 
 
 \begin{figure}[!h]
 \centering
-\includegraphics[width=0.9\linewidth]{Report/images/entropy_regularisation_2.png}
+\includegraphics[width=0.9\linewidth]{Report/images/05.Performance_of_REINFORCE_with_ER_Steps.png}
 \caption{\label{fig:ReinforceEntropy_Rewards_Steps}The figure above shows the total steps of REINFORCE with entropy regularisation with different learning rates. As we can see, all learning rates show a rising trend of rewards, with the graph for learning rates 0.01 and 0.001 showing the most improvement and the learning rate 0.1 stabilising but not showing much improvement. }
 \end{figure}
 \par To improve our existing results we decided to implement a version of REINFORCE that includes entropy regularisation and as seen from our figure 4, the learning is much better and a faster convergence as learning rates begin rising. This is because the inclusion of an entropy term to the loss function helps penalise trajectories with lesser randomness (or entropy) and thus encourages the policy network to explore more diverse state and action spaces, increasing exploration and preventing getting stuck in local maxima. 
@@ -250,19 +250,19 @@ Figures 6, 7 and 8 show us the performances of Actor-Critic with bootstrapping w
 As seen in figure 6 learning rate of 0.005 shows a jump in average returns compared to other learning rates. Furthermore, we can also see in figure 7 that bootstrapping with 2 or 3 hidden layers tends to learn faster than bootstrapping with only one hidden layer. Lastly, figure 8 shows the effects of the number of neurons on learning rate. We can see that neural networks with 64 neurons learn faster than neural networks with 128 or 256 neurons. 
 \begin{figure}[h!]
     \centering
-\includegraphics[width=0.9\linewidth]{Report/images/Performance_of_Actor_Critic_BS_LR.png}
+\includegraphics[width=0.9\linewidth]{Report/images/06.Performance_of_Actor_Critic_BS_LR.png}
 \caption{\label{fig:ActorCritic for different learning rates}The result of Actor Critic with different learning rates. When the learning rate is set to 0.005, relatively good results are achieved in training the agent. However, after 1000 episodes (averaged over every 5 episodes for a total of 200 averages), the reward still remains below zero. Conversely, when the learning rate is set to a higher value (0.05) or a lower value (0.001), the agent does not train at all.}
 \end{figure}
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.9\linewidth]{Report/images/Performance_of_Actor_Critic_BS_Layers.png}
+\includegraphics[width=0.9\linewidth]{Report/images/07.Performance_of_Actor_Critic_BS_Layers.png}
 \caption{\label{fig:ActorCritic for different Hidden Layers}The result of Actor Critic with different hidden layers. When both the policy network and the value network have only one hidden layer, the agent cannot be trained, as evidently seen in the graph. Increasing the hidden layers of these two networks can improve the training effect. The graph demonstrates the improvement in performance with more than one hidden layer, with a significantly better reward than with one hidden layer}
 \end{figure}
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.9\linewidth]{Report/images/Performance_of_Actor_Critic_BS_Neurons.png}
+\includegraphics[width=0.9\linewidth]{Report/images/08.Performance_of_Actor_Critic_BS_Neurons.png}
 \caption{\label{fig:ActorCritic for different Neurons}The result of Actor Critic with different neurons. According to results of different network layers, we set both the policy network and the value network to have two hidden layers. The results shows that networks with fewer neurons tend to perform relatively better, but there is still a long way to go before the agent is successfully trained.}
 \end{figure}
 
@@ -306,6 +306,12 @@ Initialise $\theta$ and $\phi$ arbitrarily\;\\
 }
 \State \Return parameter $\theta$
 \end{algorithm}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\linewidth]{Report/images/09.Performance_of_Actor_Critc_BSub_LR.png}
+\caption{\label{fig:ActorCritic with Baseline Subtraction - Variation in Learning Rate}The result of Actor Critic with Baseline Subtr with different neurons. According to results of different network layers, we set both the policy network and the value network to have two hidden layers. The results shows that networks with fewer neurons tend to perform relatively better, but there is still a long way to go before the agent is successfully trained.}
+\end{figure}
 \subsubsection{Bootstrapping and Baseline Subtraction}
 Certain Actor-Critic algorithms combine both bootstrapping and baseline subtraction. 
 
@@ -362,19 +368,19 @@ Initialise $\theta$ and $\phi$ arbitrarily\;\\
 \end{algorithm}
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.9\linewidth]{Report/images/Performance_of_Actor_Critic_BSandBS_LR.png}
+\includegraphics[width=0.9\linewidth]{Report/images/10.Performance_of_Actor_Critic_BSandBS_LR.png}
 \caption{\label{fig:ActorCriticBS2-different learning rates}The figure above shows the result of Actor Critic with different learning rates. As we can see, all learning rates show a rising trend of rewards, with the graph for learning rate 0.01 showing the most improvement}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.9\linewidth]{Report/images/Performance_of_Actor_Critic_BSandBS_Neurons.png}
+\includegraphics[width=0.9\linewidth]{Report/images/11.Performance_of_Actor_Critic_BSandBS_Layers.png}
 \caption{\label{fig:ActorCriticBS2-different neurons}The figure above shows the result of Actor Critic with different number of neurons}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.9\linewidth]{Report/images/Performance_of_Actor_Critic_BSandBS_Layers.png}
+\includegraphics[width=0.9\linewidth]{Report/images/12.Performance_of_Actor_Critic_BSandBS_Neurons.png}
 \caption{\label{fig:ActorCriticBS2-different hidden layers}The figure above shows the result of Actor Critic with different hidden layers}
 \end{figure}
 
