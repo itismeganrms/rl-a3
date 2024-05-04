@@ -1,6 +1,6 @@
 %%%%%%%% ICML 2021 EXAMPLE LATEX SUBMISSION FILE %%%%%%%%%%%%%%%%%
 \documentclass{article}
-\usepackage[]{algorithm2e}
+\usepackage{algorithm2e}
 \usepackage{algorithmic}
 \usepackage{algorithm}
 % Recommended, but optional, packages for hs and better typesetting:
@@ -27,7 +27,7 @@ Assignment 3: Policy-based Reinforcement Learning}
 \begin{icmlauthorlist}
 \icmlauthor{Sherry Usman}{equal,to}
 \icmlauthor{Qin Zhipei}{equal,to}
-\icmlauthor{Megan Mirnalini Sundaram R}{equal, to}
+\icmlauthor{Megan Mirnalini Sundaram R}{equal,to}
 \end{icmlauthorlist}
 
 \icmlaffiliation{to}{Leiden University}
@@ -41,7 +41,7 @@ Assignment 3: Policy-based Reinforcement Learning}
 ]
 
 \begin{abstract}
-
+This paper explores policy-based reinforcement learning in detail and the commonly used algorithms in policy-based learning. We explore this in one of the OpenAI Gym Libraries - Lunar Lander. We implement algorithms such as REINFORCE, Actor-Critic and their specifications and also delve further into the effects of bootstrapping and baseline subtraction on actor-critic networks. We compare and contrast the performances of the algorithms with variations in learning rate, hidden layers and number of neurons. We also analyze the effects of entropy regularization on these algorithms and compare the performances of the algorithms with and without entropy regularization. 
 \end{abstract}
 
 \section {Introduction}
@@ -56,8 +56,8 @@ In this paper we will delve into the Lunar Lander environment taken from the Ope
 
 %\label{Introduction and General Strategy}
 
-The Lunar Lander environment poses a number of unique challenges compared to the environments we have encountered previously. As shown in \emph{Table 1}, While the action space $A$ is still discrete with four potential actions, the observation space is an 8-dimensional vector, the positional coordinates of the lunar lander (x and y), its linear velocities in x and in y respectively, its angle, its angular velocities and two boolean values that represent whether each leg is in contact with the ground or not. The inclusion of a continuous action or state space makes tabular/value-based reinforcement learning algorithms quickly unfeasible as the cost of storing the values for each state-action pair makes our problem much more complex. \newline
-Thus, to tackle this problem we use Policy Gradient methods which can handle continuous state and action spaces much better as they directly optimise the expected return and can output continuous action distributions, making them also suitable for continuous action spaces. Furthermore, since Policy Gradient methods do not need state-action pairs to approximate values they do not run the risk of getting stuck in local optima like value-based methods and can approximate complex non-linear relationships more accurately than value-based algorithms.
+The Lunar Lander environment poses a number of unique challenges compared to the environments we have encountered previously. As shown in \emph{Table 1}, while the action space $A$ is still discrete with four potential actions, the observation space is an 8-dimensional vector, the positional coordinates of the lunar lander (x and y), its linear velocities in x and in y respectively, its angle, its angular velocities and two boolean values that represent whether each leg is in contact with the ground or not. The inclusion of a continuous action or state space makes tabular/value-based reinforcement learning algorithms quickly unfeasible as the cost of storing the values for each state-action pair makes our problem much more complex. \newline
+Thus, to tackle this problem we use Policy Gradient methods which can handle continuous state and action spaces much better as they directly optimise the expected return and can output continuous action distributions, making them also suitable for continuous action spaces.
 
 \begin{table}[htbp]
 \centering
@@ -81,14 +81,16 @@ Thus, to tackle this problem we use Policy Gradient methods which can handle con
 
 
 \section{Framework}
-For our implementation of Policy Gradient Methods, we used the Python \textbf{Pytorch} package. Our initial structure is as follows: an input layer of size 8 corresponding to the size of the observation space. This input layer feeds into a first hidden layer with 128 nodes. This then feeds into a hidden layer comprising of 128 nodes which finally outputs to a layer comprising of 1 node representing the action that should be taken. Since the Lunar Lander environment is also highly stochastic and affected by noise, to reduce noise in our graphs we computed different algorithms over 1000 episodes and averaged the results every 5 episodes to capture the general trends. Furthermore, we are aware that total rewards is not always the best parameter to measure algorithm accuracy as the number of timesteps in each episode may differ and lead to exploding or shrinking rewards. Thus, in some cases we also include another parameter to measure accuracy which is the number of timesteps.
+For our implementation of Policy Gradient Methods, we used the Python \textbf{Pytorch} package. Our initial structure is as follows: an input layer of size 8 corresponding to the size of the observation space. This input layer feeds into a first hidden layer with 128 nodes. This then feeds into a hidden layer comprising of 128 nodes which finally outputs to a layer comprising of 1 node representing the action that should be taken. Since the Lunar Lander environment is also highly stochastic, to reduce noise in our graphs we computed different algorithms over 1000 episodes and averaged the results every 5 episodes to capture the general trends. Furthermore, we are aware that total rewards is not always the best parameter to measure algorithm accuracy as the number of timesteps in each episode may differ and lead to exploding or shrinking rewards. Thus, in some cases we also include another parameter to measure accuracy which is the number of timesteps.
 
 %In this section we experiment with various hyper-parameters such as batch size, learning rates and more while also fine-tuning our neural network by modifying the number of hidden layers and neurons in each layer.% Since this environment is also highly stochastic, we de-noise by testing over 1000 episodes and averaging our results over every 10 episodes.
 %For 
 
 \section{Policy-Based Reinforcement Learning}
-The policies we looked at in the previous papers were \emph{value-based}. This means that they looked at state-value pairs in the environment and approximated the rewards of such pairs using different exploration strategies like Boltzmann or Epsilon-Greedy. Policy based reinforcement learning methods differ from value-based method as they do not utilize a value function to determine the next possible action. Used primarily in  continuous action space RL environments, policy based reinforcement learning methods use a parameterized policy function $\pi_\theta$ where $\theta$ represents the parameters of the function.
-\par During training the agent iteratively interacts with the environment over multiple episodes. After a number of episodes the collected data known as the trajectory $\tau$ is evaluated to understand the performance of the policy. If $\tau$ yields high rewards then the parameters $\theta$ are adjusted in such a way that the likelihood of taking actions similar to the actions in this trajectory is increased. On the other hand if the trajectory $\tau$ yields lower rewards then the parameters $\theta$ are adjusted in such a way that the likelihood of taking actions similar to such actions is decreased. This process of iteratively evaluating the trajectories and updating the parameters according to the obtained rewards/losses helps to refine the policy to maximize cumulative rewards in the long run \cite{plaat-deeprl}. 
+The policies we looked at in the previous papers were \emph{value-based}. This means that they looked at state-value pairs in the environment and calculated the rewards of such pairs using different exploration strategies like Boltzmann or Epsilon-Greedy. Policy based reinforcement learning methods differ from value-based method as they do not utilize a value function to determine the next possible action. Used primarily in  continuous action space RL environments, policy based reinforcement learning methods use a parameterized policy function $\pi_\theta$ where $\theta$ represents the parameters of the function. 
+During training the agent iteratively interacts with the environment and after a number of episodes the collected data known as the trajectory $\tau$ is evaluated to understand the performance of the policy. If $\tau$ yields high rewards then the parameters $\theta$ are adjusted in such a way that the likelihood of taking similar actions as those in $\tau$ is increased. On the other hand if the trajectory $\tau$ yields lower rewards then $\theta$ is adjusted in such a way that the likelihood of taking similar actions as those in $\tau$ is decreased. This process of iteratively evaluating the trajectories and updating the parameters according to the obtained rewards/losses helps to refine the policy to maximize cumulative rewards in the long run \cite{plaat-deeprl}. \newline
+Policy Gradient methods pose a number of advantages that make them suitable algorithms for reinforcement learning environments. Firstly since Policy Gradient methods directly optimise a policy function rather than approximating the value of each state-action pair they tend to be much more stable and robust in high-dimensional environments like Lunar Lander, allowing more stable convergence after a number of training episodes. Additionally, since they do not need state-action pairs to approximate values they do not run the risk of getting stuck in local optima like value-based methods and can approximate complex non-linear relationships more accurately than value-based algorithms. Lastly, policy gradient methods tend to be more sample efficient as they need less existing data to achieve a good performance and can even approximate rewards in areas with sparse reward signals. 
+
 \par
 There are a number of different policy-based reinforcement learning algorithms. However for this paper, we are limiting the scope of our research to the algorithms listed below: 
 
@@ -157,8 +159,6 @@ Initialise $\theta$ arbitrarily\;\\
 Return parameter $\theta$
 \end{algorithm}
 
-The results of REINFORCE without entropy regularisation can be seen below.
-
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\linewidth]{Report/images/reinforce_basic_image1.png}
@@ -173,7 +173,7 @@ The results of REINFORCE without entropy regularisation can be seen below.
 \end{figure}
 
 
-Figure 2 and 3 shows our results for REINFORCE without entropy regularisation. While REINFORCE is touted as a simpler Policy Gradient method it can often suffer from high variances causing slower convergence to optimal values. This is very visible from the results. Even after an average results over 1000 episodes, we are unable to see a dramatic rise in learning as we were hoping. However, we can see the effect of learning rate on model performance as learning rates of 0.001 and 0.01 outperform learning rate of 0.1. To improve our existing results we decided to implement a version of REINFORCE that includes entropy regularisation and as seen from our figure 4, there is much better learning and faster convergence as learning rates begin rising. This is because the inclusion of an entropy term to the loss function helps penalise trajectories with lesser randomness (or entropy) and thus encourages the policy network to explore more diverse state and action spaces, increasing exploration and preventing getting stuck in suboptimal local maxima. 
+Figure 2 and 3 shows our results for REINFORCE without entropy regularisation. While REINFORCE is touted as a simpler Policy Gradient method it can often suffer from high variances causing slower convergence to optimal values because it requires an entire episode to be sampled. This is very visible from the results. Even after an average results over 1000 episodes, we are unable to see a dramatic rise in learning as we were hoping. However, we can see the effect of learning rate on model performance as learning rates of 0.001 and 0.01 outperform learning rate of 0.1. To improve our existing results we decided to implement a version of REINFORCE that includes entropy regularisation and as seen from our figure 4, there is much better learning and faster convergence as learning rates begin rising. This is because the inclusion of an entropy term to the loss function helps penalise trajectories with lesser randomness (or entropy) and thus encourages the policy network to explore more diverse state and action spaces, increasing exploration and preventing getting stuck in local maxima. 
 
 \begin{figure}[htbp]
 \centering
@@ -191,7 +191,7 @@ Figure 2 and 3 shows our results for REINFORCE without entropy regularisation. W
   
 
 \subsection{Actor-Critic Methods}
-\par In the REINFORCE algorithm, because the entire episode must be sampled, its variance is high. The Actor Critic method combines value-based and policy-based methods, achieving both low variance and low bias. 
+\par In the REINFORCE algorithm, we did not observe a fast convergence to optimal values. This was probably because the REINFORCE algorithm the entire episode must be sampled and thus suffers from high variance. In this section we will discuss Actor Critic methods and how they combine the advantages of both value-based and policy-based methods, helping them achieving better results, both in terms of a low variance and a low bias. 
 \par Actor Critic methods are Temporal Difference methods and have a separate memory structure to store the policy function independent of the value function. They generally have two neural networks: a policy structure known as an \emph{actor} and an estimated value function known as the \emph{critic}. While the policy function (or actor) returns a probability distribution of actions that can be taken in specific states, a value function (or the critic) determines the expected reward gained by following the policy. Thus the value function is called a critic as it criticises the actions taken by the actor in the form of a TD error. This scalar signal indicates whether the actions taken by the agent are better or worse than what the critic expected. 
 \par The TD error can be evaluated as follows in the following equation
 \begin{equation*}
@@ -206,21 +206,15 @@ Figure 2 and 3 shows our results for REINFORCE without entropy regularisation. W
 \item $V_t(S_{t+1})$ is the estimated value of going to state $S_{t+1}$ at timestep t according to the critic. This represents the estimated cumulative rewards that can be gained from step $S_{t+1}$ onwards.
 \item $V_t(S_t)$ is the estimated value of going to state $S_t$ according to the critic. This represents the estimated total rewards that can be gained from step $S_{t}$ onwards.
 \end{itemize}
+
 Thus, a positive TD error ($\delta_{t}$ \textgreater 0) indicates that the value of transitioning from state $S_t$ to $S_{t+1}$ is greater than expected and thus the action responsible should be taken more often. On the other hand a negative TD error ($\delta_{t}$ \textless 0) indicates that the value of transitioning from state $S_t$ to $S_{t+1}$ is lesser than expected and thus the action responsible should be avoided in the future. Thus, through this iterative process of updating the TD error the Actor Critic algorithm tends to strike a balance between exploration and exploitation. The actor explores the state space and taking more diverse actions and the critic evaluating the consequences of the actions. When the actions are more risky and produce lesser expected returns the TD error is negative and when they are more fruitful and produce higher expected returns the TD error is positive.
 
 \subsubsection{Bootstrapping}
 %\par A variation of Actor-Critic incorporates a bootstrapping technique. In the REINFORCE algorithm, because the entire episode must be sampled, its variance is high. The Actor Critic method combines value-based and policy-based methods, achieving both low variance and low bias. The Actor Critic method incorporates the bootstrapping technique to improve estimates of cumulative rewards. By using bootstrapping, the Actor Critic method can use the Critic's immediate feedback to adjust the Actor's strategy, thus achieving a better balance between exploring the environment and learning optimized action strategies.. 
-\par A variation of Actor-Critic incorporates a bootstrapping technique. In this scenario, the critic uses bootstrapping to update the value Q of the state-action pairs, harking back to value-based methods. This improve estimates of cumulative rewards. 
+\par A variation of Actor-Critic incorporates a bootstrapping technique which combines elements of both policy-based and value-based methods. In this architecture the actor, as usual, learns a parameterized policy function $\pi_\theta$ that maps states to actions. The critic uses bootstrapping to update the value function and estimate the value of the state-action pairs. Thus, instead of waiting for the cumulative rewards from the environment it updates the value function using its own estimates. 
 \par By using bootstrapping, the Actor Critic method can use the Critic's immediate feedback to adjust the Actor's strategy, thus achieving a better balance between exploring the environment and learning optimized action strategies.
-The descent advantage loss allows the actor to choose the actions that outperform the baseline, while the ascent policy gradient drives policy updates to maximize the cumulative reward.
-\par Descent Advantage Loss is given by
-\begin{equation*}
-\phi \leftarrow \phi - \alpha * \nabla_\phi\Sigma_t(\hat{A}_n(s_t,a_t))^2
-\end{equation*}
-Ascent Policy Gradient is given by
-\begin{equation*}
-\theta \leftarrow \theta + \alpha * \Sigma_t[\hat{A}_n(s_t,a_t)*\nabla_\theta\log\pi_\theta(a_t|s_t)]
-\end{equation*}
+The descent advantage loss allows the actor to choose the actions that outperform the baseline by minimising the difference between them, while the ascent policy gradient drives policy updates to maximize the cumulative reward by increasing the likelihood of selecting actions with higher advantages.
+
 The algorithm for Actor-Critic with Bootstrapping is given below \cite{plaat-deeprl}
 \begin{algorithm}[htbp]
 \caption{Actor-Critic with Bootstrapping}
@@ -228,8 +222,8 @@ The algorithm for Actor-Critic with Bootstrapping is given below \cite{plaat-dee
 \DontPrintSemicolon
 \small % Set font size to small
 \KwData{parameter $\theta$, policy function $\pi_\theta$, maximum timesteps $T$, number of episodes $E$, estimation depth $n$, learning rate $\alpha$, value function $V_\phi (s)$}
-\KwResult{Selected action}
 Initialise $\theta$ and $\phi$ arbitrarily\;\\
+\item \textbf{Repeat} \;\\
 \For{$e \in 1$ \KwTo $E$}
 {
     \item Initialise state $s$\;
@@ -238,41 +232,53 @@ Initialise $\theta$ and $\phi$ arbitrarily\;\\
     \For{$t = 1$ \KwTo $T-1$}
     {
      \item Compute cumulative reward $\hat{Q}_n(s_t,a_t)$ for the n-step target
-     \newline \(\hat{Q}^(s_t,a_t) = \sum_{k=0}^{n-1}\gamma^k\cdot r_{t+k} + \gamma_n \cdot V_\phi (s_{t+n})\)
+     \newline \(\hat{Q}^(s_t,a_t) = \sum_{k=0}^{n-1}\gamma^k\cdot r_{t+k} + \gamma^{n} \cdot V_\phi (s_{t+n})\)
     }
-    \item Compute descent advantage loss $\phi$
-    \item Compute ascent policy gradient $\theta$
 }
-\State \Return parameter $\theta$
+    \item $\phi \leftarrow \phi - \alpha \cdot \nabla_\phi \sum_t (\hat{Q}_n(s_t, a_t) - V_\phi(s_t))^2$ \;
+    \item $\theta \leftarrow \theta + \alpha \sum_t [\hat{Q}_n(s_t, a_t) \nabla_\theta \log \pi_\theta(a_t | s_t)]$\;
+\item \textbf{Until} $\nabla_\theta J(\theta)$ converges below $\epsilon$ \;
+\item \textbf{Return} parameter $\theta$
 \end{algorithm}
+
+Figures 6, 7 and 8 show us the performances of Actor-Critic with bootstrapping when varying different hyperparameters such as learning rate, the number of hidden layers and the number of neurons. \newline 
+As seen in figure 6 learning rate of 0.005 shows a jump in average returns compared to other learning rates. Furthermore, we can also see in figure 7 that bootstrapping with 2 or 3 hidden layers tends to learn faster than bootstrapping with only one hidden layer. Lastly, figure 8 shows the effects of the number of neurons on learning rate. We can see that neural networks with 64 neurons learn faster than neural networks with 128 or 256 neurons. 
+While the results do provide some key insights, it is important to note that when averaging rewards in highly stochastic environments can lead to final graphs where the overall increase is not as dramatic.
 
 \begin{figure}[htbp]
     \centering
 \includegraphics[width=0.9\linewidth]{Report/images/Performance_of_Actor_Critic_BS_LR.png}
-\caption{\label{fig:ActorCritic for different learning rates}The figure above shows the result of Actor Critic with different learning rates. As we can see, all learning rates show a rising trend of rewards, with the graph for learning rate 0.01 showing the most improvement}
+\caption{\label{fig:ActorCritic for different learning rates}The result of Actor Critic with different learning rates. When the learning rate is set to 0.005, relatively good results are achieved in training the agent. However, after 1000 episodes (averaged over every 5 episodes for a total of 200 averages), the reward still remains below zero. Conversely, when the learning rate is set to a higher value (0.05) or a lower value (0.001), the agent does not train at all.}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\linewidth]{Report/images/Performance_of_Actor_Critic_BS_Layers.png}
+\caption{\label{fig:ActorCritic for different Hidden Layers}The result of Actor Critic with different hidden layers. When both the policy network and the value network have only one hidden layer, the agent cannot be trained, as evidently seen in the graph. Increasing the hidden layers of these two networks can improve the training effect. The graph demonstrates the improvement in performance with more than one hidden layer, with a significantly better reward than with one hidden layer}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\linewidth]{Report/images/Performance_of_Actor_Critic_BS_Neurons.png}
-\caption{\label{fig:ActorCritic for different Neurons}The figure above shows the result of Actor Critic with different neurons. }
+\caption{\label{fig:ActorCritic for different Neurons}The result of Actor Critic with different neurons. According to results of different network layers, we set both the policy network and the value network to have two hidden layers. The results shows that networks with fewer neurons tend to perform relatively better, but there is still a long way to go before the agent is successfully trained.}
 \end{figure}
-filler text in between to fix the alignment
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.9\linewidth]{Report/images/Performance_of_Actor_Critic_BS_Layers.png}
-\caption{\label{fig:ActorCritic for different Hidden Layers}The figure above shows the result of Actor Critic with different hidden layers}
-\end{figure}
+
+
 
 
 
 
 \subsubsection{Baseline Subtraction}
-Actor-Critic algorithms could also employ baseline subtraction which is a technique used to reduce the variance by using a baseline. We recall the previous policy gradient function denoted by 
+Actor-Critic algorithms could also employ baseline subtraction which is a technique used to reduce the variance and improve convergence. We recall the previous policy gradient function denoted by 
+
 \begin{equation*}
 \nabla_\theta J(\theta) = \mathbb{E}_\pi[\sum _{t=0}^{T-1}  \nabla_\theta \log\pi_\theta (a_t|s_t)G_t]
 \end{equation*}
-By subtracting a baseline $b(s_t)$ from the cumulative reward helps reduce make them smaller and more stable, reducing variance. The updated policy gradient function after baseline subtraction is shown below. 
+
+By subtracting a baseline $b(s_t)$, typically a value function,  from the observed cumulative reward helps reduce make them smaller and more stable. This reduces the variance, without changing the expectation. \cite{david-ucl-lecture}
+
+The updated policy gradient function after baseline subtraction is shown below. 
+
 \begin{equation*}
 \nabla_\theta J(\theta) = \mathbb{E}_\pi[\sum _{t=0}^{T-1}  \nabla_\theta\log\pi_\theta (a_t|s_t)G_t - b(s_t)]
 \end{equation*}
@@ -300,7 +306,30 @@ Initialise $\theta$ and $\phi$ arbitrarily\;\\
 \State \Return parameter $\theta$
 \end{algorithm}
 \subsubsection{Bootstrapping and Baseline Subtraction}
-Actor-Critic algorithms combine both Bootstrapping and Baseline Subtraction
+Certain Actor-Critic algorithms combine both bootstrapping and baseline subtraction. 
+
+The equations for Descent Advantage Loss and Ascent Policy Gradient are given below. 
+\par Descent Advantage Loss is given by
+\begin{equation*}
+\theta \leftarrow \theta - \alpha * \nabla_\theta\Sigma_t(\hat{A}_n(s_t,a_t))^2
+\end{equation*}
+
+Where $\theta$ are the parameters of the value network, 
+
+Ascent Policy Gradient is given by
+\begin{equation*}
+\theta \leftarrow \theta + \alpha * \Sigma_t[\hat{A}_n(s_t,a_t)*\nabla_\theta\log\pi_\theta(a_t|s_t)]
+\end{equation*}
+
+Where 
+\begin{itemize}[itemsep=0pt]
+\renewcommand\labelitemi{.}
+\item $\theta$ is the parameter of the policy function
+\item $\alpha$ is the learning rate
+\item $\gamma$ is the discount factor which discounts future rewards
+\item $\hat{A}_n(s_t,a_t)$ is the advantage function which represents the estimated advantage of taking an action $a_t$ in the state $s_t$
+\item $\nabla_\theta$ represents the gradient with respect to the policy parameters $\theta$
+\end{itemize}
 
 \begin{algorithm}[htbp]
 \caption{Actor-Critic with Bootstrapping and Baseline Subtraction}
@@ -321,8 +350,12 @@ Initialise $\theta$ and $\phi$ arbitrarily\;\\
      \item Compute advantage function using the cumulative reward and the value function;
      \(\hat{A}_n(s_t,a_t) = \hat{Q}_n(s_t,a_t) - V_\phi(s_t)\)
     }
-    \item Compute descent advantage loss $\phi$
-    \item Compute ascent policy gradient $\theta$
+    \item Compute Descent Advantage Loss
+    \newline
+     \(\phi \leftarrow \phi - \alpha \cdot \nabla_\theta\Sigma_t(\hat{A}_n(s_t,a_t))^2\) 
+     \item Compute Ascent Policy Gradient
+     \newline 
+    \(\theta \leftarrow \theta + \alpha \cdot \Sigma_t[\hat{A}_n(s_t,a_t)*\nabla_\theta\log\pi_\theta(a_t|s_t)]\)
 }
 \State \Return parameter $\theta$
 \end{algorithm}
@@ -348,7 +381,10 @@ filler text to fix the alignment
 
 \section{Goals Achieved}
 \subsection{Effects of policy gradients on variance}
+As we can see from our results, policy gradient methods can have a stabilising effect on variance, particularly in highly-random or stochastic systems like reinforcement learning environments. They do this by providing an output of  probability distribution over actions in a certain state and by optimising the stochastic policy function such that actions with more than expected returns are more likely than actions with less than expected returns. This is different from value-based methods that store the value of each state-action pair and select a single deterministic action that is suitable at any state the agent is in.  
+\par Furthermore, additional features such as entropy regularisation can help the architecture balance the exploration-to-exploitation ratio, allowing the agent to explore more unfamiliar state spaces in some cases and prioritizing greedy actions in others. 
 \subsection{Effects of bootstrapping on the policy gradients}
+Bootstrapping is done to reduce the variance of the policy gradient. 
 \subsection{Comparison of Performance}
 \subsection{Effect of entropy regularization on performance}
 
