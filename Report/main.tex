@@ -56,8 +56,8 @@ In this paper we will delve into the Lunar Lander environment taken from the Ope
 
 %\label{Introduction and General Strategy}
 
-The Lunar Lander environment poses a number of unique challenges compared to the environments we have encountered previously. As shown in \emph{Table 1}, while the action space $A$ is still discrete with four potential actions, the observation space is an 8-dimensional vector, the positional coordinates of the lunar lander (x and y), its linear velocities in x and in y respectively, its angle, its angular velocities and two boolean values that represent whether each leg is in contact with the ground or not. The inclusion of a continuous action or state space makes tabular/value-based reinforcement learning algorithms quickly unfeasible as the cost of storing the values for each state-action pair makes our problem much more complex. \newline
-Thus, to tackle this problem we use Policy Gradient methods which can handle continuous state and action spaces much better as they directly optimise the expected return and can output continuous action distributions, making them also suitable for continuous action spaces.
+The Lunar Lander environment poses a number of unique challenges compared to the environments we have encountered previously. As shown in \emph{Table 1}, while the action space $A$ is still discrete with four potential actions, the observation space is an 8-dimensional vector comprising of the positional coordinates of the lunar lander (x and y), its linear velocities in x and in y respectively, its angle, its angular velocities and two boolean values that represent whether each leg is in contact with the ground or not. The inclusion of a continuous action or state space makes tabular/value-based reinforcement learning algorithms quickly unfeasible as the cost of storing the values for each state-action pair makes our problem much more complex. 
+\par Thus, to tackle this problem we use Policy Gradient methods which can handle continuous state and action spaces much better, as they directly optimise the expected return and can provide continuous action distributions as output, making them also suitable for continuous action spaces.
 
 \begin{table}[htbp]
 \centering
@@ -81,15 +81,22 @@ Thus, to tackle this problem we use Policy Gradient methods which can handle con
 
 
 \section{Framework}
-For our implementation of Policy Gradient Methods, we used the Python \textbf{Pytorch} package. Our initial structure is as follows: an input layer of size 8 corresponding to the size of the observation space. This input layer feeds into a first hidden layer with 128 nodes. This then feeds into a hidden layer comprising of 128 nodes which finally outputs to a layer comprising of 1 node representing the action that should be taken. Since the Lunar Lander environment is also highly stochastic, to reduce noise in our graphs we computed different algorithms over 1000 episodes and averaged the results every 5 episodes to capture the general trends. Furthermore, we are aware that total rewards is not always the best parameter to measure algorithm accuracy as the number of timesteps in each episode may differ and lead to exploding or shrinking rewards. Thus, in some cases we also include another parameter to measure accuracy which is the number of timesteps.
+For our implementation of Policy Gradient Methods, we used the Python \textbf{Pytorch} package. 
+\par Our initial structure is as follows: an input layer of size 8 corresponding to the size of the observation space. This input layer feeds into a first hidden layer with 128 nodes. This then feeds into a hidden layer comprising of 128 nodes which finally outputs to a layer comprising of 1 node representing the action that should be taken. Since the Lunar Lander environment is also highly stochastic, to reduce noise in our graphs we computed different algorithms over 1000 episodes and averaged the results every 5 episodes to capture the general trends. 
+\par Furthermore, we are aware that total rewards is not always the best parameter to measure algorithm accuracy as the number of timesteps in each episode may differ and lead to exploding or shrinking rewards. Thus, in some cases we also include another parameter to measure accuracy which is the number of timesteps.
 
 %In this section we experiment with various hyper-parameters such as batch size, learning rates and more while also fine-tuning our neural network by modifying the number of hidden layers and neurons in each layer.% Since this environment is also highly stochastic, we de-noise by testing over 1000 episodes and averaging our results over every 10 episodes.
 %For 
 
 \section{Policy-Based Reinforcement Learning}
-The policies we looked at in the previous papers were \emph{value-based}. This means that they looked at state-value pairs in the environment and calculated the rewards of such pairs using different exploration strategies like Boltzmann or Epsilon-Greedy. Policy based reinforcement learning methods differ from value-based method as they do not utilize a value function to determine the next possible action. Used primarily in  continuous action space RL environments, policy based reinforcement learning methods use a parameterized policy function $\pi_\theta$ where $\theta$ represents the parameters of the function. 
-During training the agent iteratively interacts with the environment and after a number of episodes the collected data known as the trajectory $\tau$ is evaluated to understand the performance of the policy. If $\tau$ yields high rewards then the parameters $\theta$ are adjusted in such a way that the likelihood of taking similar actions as those in $\tau$ is increased. On the other hand if the trajectory $\tau$ yields lower rewards then $\theta$ is adjusted in such a way that the likelihood of taking similar actions as those in $\tau$ is decreased. This process of iteratively evaluating the trajectories and updating the parameters according to the obtained rewards/losses helps to refine the policy to maximize cumulative rewards in the long run \cite{plaat-deeprl}. \newline
-Policy Gradient methods pose a number of advantages that make them suitable algorithms for reinforcement learning environments. Firstly since Policy Gradient methods directly optimise a policy function rather than approximating the value of each state-action pair they tend to be much more stable and robust in high-dimensional environments like Lunar Lander, allowing more stable convergence after a number of training episodes. Additionally, since they do not need state-action pairs to approximate values they do not run the risk of getting stuck in local optima like value-based methods and can approximate complex non-linear relationships more accurately than value-based algorithms. Lastly, policy gradient methods tend to be more sample efficient as they need less existing data to achieve a good performance and can even approximate rewards in areas with sparse reward signals. 
+\par The policies we looked at in the previous papers were \emph{value-based}. This means that they looked at state-value pairs in the environment and calculated the rewards of such pairs using different exploration strategies like Boltzmann or Epsilon-Greedy. Policy based reinforcement learning methods differ from value-based method as they do not utilize a value function to determine the next possible action. Used primarily in  continuous action space RL environments, policy based reinforcement learning methods use a parameterized policy function $\pi_\theta$ where $\theta$ represents the parameters of the function. 
+\par During training the agent iteratively interacts with the environment and after a number of episodes the collected data known as the trajectory $\tau$ is evaluated to understand the performance of the policy. 
+\begin{itemize}
+    \item If $\tau$ yields high rewards then the parameters $\theta$ are adjusted in such a way that the likelihood of taking similar actions as those in $\tau$ is increased.
+    \item On the other hand if the trajectory $\tau$ yields lower rewards then $\theta$ is adjusted in such a way that the likelihood of taking similar actions as those in $\tau$ is decreased.
+\end{itemize}  
+This process of iteratively evaluating the trajectories and updating the parameters according to the obtained rewards/losses helps to refine the policy to maximize cumulative rewards in the long run \cite{plaat-deeprl}.
+\par Policy Gradient methods pose a number of advantages that make them suitable algorithms for reinforcement learning environments. Firstly since Policy Gradient methods directly optimise a policy function rather than approximating the value of each state-action pair they tend to be much more stable and robust in high-dimensional environments like Lunar Lander, allowing more stable convergence after a number of training episodes. Additionally, since they do not need state-action pairs to approximate values they do not run the risk of getting stuck in local optima like value-based methods and can approximate complex non-linear relationships more accurately than value-based algorithms. Lastly, policy gradient methods tend to be more sample efficient as they need less existing data to achieve a good performance and can even approximate rewards in areas with sparse reward signals. 
 
 \par
 There are a number of different policy-based reinforcement learning algorithms. However for this paper, we are limiting the scope of our research to the algorithms listed below: 
@@ -103,7 +110,7 @@ There are a number of different policy-based reinforcement learning algorithms. 
 These algorithms are discussed in the future sections. 
 
 \par For any reinforcement learning algorithm it is necessary to decide on an action selection policy. Traditional action selection algorithms used before such as Boltzmann or E-greedy cannot be used in this paper as they are better suited for value-based reinforcement learning algorithms working with a discrete action space and/or state space. This is because both epsilon-greedy and Boltzman are algorithms that scans potential actions that can be taken by the agent at a particular state and calculates their value, which helps inform the agent's next step. This is not possible in Policy Gradient methods which are less concerned with state-action pairs and more with the policy function. 
-\par Thus in this paper we work with \textbf{Entropy Regularisation}. Entropy regularisation is an exploration technique that helps balance the exploration to exploitation ratio by encouraging the agent to explore more diverse actions and unfamiliar spaces. It does this by increasing by adding an entropy term to the loss function to promote action diversity and preventing sub-optimising to local rewards. The entropy term is defined in the equation below. %
+\par Hence, in this paper we work with \textbf{Entropy Regularisation}. Entropy regularisation is an exploration technique that helps balance the exploration to exploitation ratio by encouraging the agent to explore more diverse actions and unfamiliar spaces. It does this by increasing by adding an entropy term to the loss function to promote action diversity and preventing sub-optimising to local rewards. The entropy term is defined in the equation below. %
 
 \begin{equation*}
 H(X) = - \sum \pi(x) log(\pi(x)) %t + 1] 
@@ -159,35 +166,33 @@ Initialise $\theta$ arbitrarily\;\\
 Return parameter $\theta$
 \end{algorithm}
 
-\begin{figure}[htbp]
+\begin{figure}[h!]
 \centering
-\includegraphics[width=0.9\linewidth]{Report/images/reinforce_basic_image1.png}
+\includegraphics[width=0.9\linewidth]{Report/images/Rewards_of_REINFORCE_without_ER.png}
 \caption{\label{fig:Reinforce Rewards}The figure above shows the rewards of REINFORCE without entropy regularisation with different learning rates. As we can see, almost learning rates show a rising trend of rewards, with the graph for learning rates 0.01 and 0.001 showing the most promise. }
 \end{figure}
 
 
-\begin{figure}[htbp]
+\begin{figure}[h!]
 \centering
-\includegraphics[width=0.9\linewidth]{Report/images/reinforce_basic_image2.png}
+\includegraphics[width=0.9\linewidth]{Report/images/Steps_of_REINFORCE_without_ER.png}
 \caption{\label{fig:ReinforceEntropy_Rewards}The figure above shows the steps of REINFORCE without entropy regularisation with different learning rates. As we can see, almost learning rates show a rising trend of steps, with the graph for learning rates 0.01 and 0.001 showing the most promise. }
 \end{figure}
+\par Figure 2 and 3 shows our results for REINFORCE without entropy regularisation. While REINFORCE is touted as a simpler Policy Gradient method it can often suffer from high variances causing slower convergence to optimal values because it requires an entire episode to be sampled. This is very visible from the results. Even after an average results of over 1000 episodes, we are unable to see a dramatic rise in learning as we expected. However, we can see the effect of learning rate on model performance as learning rates of 0.001 and 0.01 outperform learning rate of 0.1. 
 
-
-Figure 2 and 3 shows our results for REINFORCE without entropy regularisation. While REINFORCE is touted as a simpler Policy Gradient method it can often suffer from high variances causing slower convergence to optimal values because it requires an entire episode to be sampled. This is very visible from the results. Even after an average results over 1000 episodes, we are unable to see a dramatic rise in learning as we were hoping. However, we can see the effect of learning rate on model performance as learning rates of 0.001 and 0.01 outperform learning rate of 0.1. To improve our existing results we decided to implement a version of REINFORCE that includes entropy regularisation and as seen from our figure 4, there is much better learning and faster convergence as learning rates begin rising. This is because the inclusion of an entropy term to the loss function helps penalise trajectories with lesser randomness (or entropy) and thus encourages the policy network to explore more diverse state and action spaces, increasing exploration and preventing getting stuck in local maxima. 
-
-\begin{figure}[htbp]
+\begin{figure}[!h]
 \centering
 \includegraphics[width=0.9\linewidth]{Report/images/entropy_regularisation.png}
 \caption{\label{fig:ReinforceEntropy_Rewards_LR}The figure above shows the rewards of REINFORCE with entropy regularisation with different learning rates. As we can see, all learning rates show a rising trend of rewards, with the graph for learning rates 0.01 and 0.001 showing the most improvement and the learning rate 0.1 stabilising but not showing much improvement. }
 \end{figure}
 
 
-\begin{figure}[htbp]
+\begin{figure}[!h]
 \centering
 \includegraphics[width=0.9\linewidth]{Report/images/entropy_regularisation_2.png}
 \caption{\label{fig:ReinforceEntropy_Rewards_Steps}The figure above shows the total steps of REINFORCE with entropy regularisation with different learning rates. As we can see, all learning rates show a rising trend of rewards, with the graph for learning rates 0.01 and 0.001 showing the most improvement and the learning rate 0.1 stabilising but not showing much improvement. }
 \end{figure}
-
+\par To improve our existing results we decided to implement a version of REINFORCE that includes entropy regularisation and as seen from our figure 4, the learning is much better and a faster convergence as learning rates begin rising. This is because the inclusion of an entropy term to the loss function helps penalise trajectories with lesser randomness (or entropy) and thus encourages the policy network to explore more diverse state and action spaces, increasing exploration and preventing getting stuck in local maxima. 
   
 
 \subsection{Actor-Critic Methods}
@@ -243,29 +248,25 @@ Initialise $\theta$ and $\phi$ arbitrarily\;\\
 
 Figures 6, 7 and 8 show us the performances of Actor-Critic with bootstrapping when varying different hyperparameters such as learning rate, the number of hidden layers and the number of neurons. \newline 
 As seen in figure 6 learning rate of 0.005 shows a jump in average returns compared to other learning rates. Furthermore, we can also see in figure 7 that bootstrapping with 2 or 3 hidden layers tends to learn faster than bootstrapping with only one hidden layer. Lastly, figure 8 shows the effects of the number of neurons on learning rate. We can see that neural networks with 64 neurons learn faster than neural networks with 128 or 256 neurons. 
-While the results do provide some key insights, it is important to note that when averaging rewards in highly stochastic environments can lead to final graphs where the overall increase is not as dramatic.
-
-\begin{figure}[htbp]
+\begin{figure}[h!]
     \centering
 \includegraphics[width=0.9\linewidth]{Report/images/Performance_of_Actor_Critic_BS_LR.png}
 \caption{\label{fig:ActorCritic for different learning rates}The result of Actor Critic with different learning rates. When the learning rate is set to 0.005, relatively good results are achieved in training the agent. However, after 1000 episodes (averaged over every 5 episodes for a total of 200 averages), the reward still remains below zero. Conversely, when the learning rate is set to a higher value (0.05) or a lower value (0.001), the agent does not train at all.}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[h!]
 \centering
 \includegraphics[width=0.9\linewidth]{Report/images/Performance_of_Actor_Critic_BS_Layers.png}
 \caption{\label{fig:ActorCritic for different Hidden Layers}The result of Actor Critic with different hidden layers. When both the policy network and the value network have only one hidden layer, the agent cannot be trained, as evidently seen in the graph. Increasing the hidden layers of these two networks can improve the training effect. The graph demonstrates the improvement in performance with more than one hidden layer, with a significantly better reward than with one hidden layer}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[h!]
 \centering
 \includegraphics[width=0.9\linewidth]{Report/images/Performance_of_Actor_Critic_BS_Neurons.png}
 \caption{\label{fig:ActorCritic for different Neurons}The result of Actor Critic with different neurons. According to results of different network layers, we set both the policy network and the value network to have two hidden layers. The results shows that networks with fewer neurons tend to perform relatively better, but there is still a long way to go before the agent is successfully trained.}
 \end{figure}
 
-
-
-
+While the results do provide some key insights, it is important to note that when averaging rewards in highly stochastic environments can lead to final graphs where the overall increase is not as dramatic.
 
 
 \subsubsection{Baseline Subtraction}
@@ -376,8 +377,6 @@ Initialise $\theta$ and $\phi$ arbitrarily\;\\
 \includegraphics[width=0.9\linewidth]{Report/images/Performance_of_Actor_Critic_BSandBS_Layers.png}
 \caption{\label{fig:ActorCriticBS2-different hidden layers}The figure above shows the result of Actor Critic with different hidden layers}
 \end{figure}
-
-filler text to fix the alignment
 
 \section{Goals Achieved}
 \subsection{Effects of policy gradients on variance}
