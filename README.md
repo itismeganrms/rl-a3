@@ -28,6 +28,13 @@ We explored 4 different Policy based Reinforcement Learning algorithms:
   
 ### Policy-based Reinforcement Learning
 The section called Policy-based Reinforcement Learning includes the .py files, where we experiemented with the algorithms and introduced different variations in learning rates, hidden layers, neurons. 
-- The reinforce_basic.py and reinforce_with_entropy_regularisation.py compares the performance of REINFORCE algorithm with and without entropy regularization. It also compares the performance of the algorithm against different learning rates.
-- The actor_critic_basic.py contains the implementation of the basic actor-critic algorithm, without bootstrapping or baseline subtraction. It also plots the performance of the algorithm against different learning rates.
-- The actor_critic_with_bootstrapping_and_baseline.py contains the implementation of the actor-critic algorithm, with bootstrapping and baseline subtraction in it. This also plots the performance of the algorithm for multiple learning rates. 
+- The reinforce_basic.py and reinforce_with_entropy_regularisation.py compares the performance of REINFORCE algorithm without and with entropy regularization. It also compares the performance of the algorithm against different learning rates.
+- The actor_critic.py contains the implementation of the basic actor-critic algorithm, without bootstrapping or baseline subtraction. It also plots the performance of the algorithm against different learning rates.
+- The actor_critic_baseline.py and actor_critic_entropy.py contains the implementation of the actor-critic algorithm, without and with entropy regularization. It also compares the performance of the algorithm against different learning rates.
+- The bootstrapping baseline subtraction.py contains the implementation of the actor-critic algorithm, with bootstrapping and baseline subtraction in it. This also plots the performance of the algorithm for multiple learning rates.
+
+### Hyper-Parameter Tuning
+- The performance of REINFORCE algorithm has been tested against various learning rates [0.001, 0.01, 0.1], with and without entropy regularization
+- Actor-Critic with bootstrapping has been tested for various learning rates [0.001, 0.01, 0.1], difference in hidden layers [1,2,3] and number of neurons [64,128,256]
+- Actor-Critic with baseline subtraction has been tested against various learning rates [0.001, 0.01, 0.1], with and without entropy regularization
+- Actor-Critic with bootstrapping and baseline subtraction has been tested for various learning rates [0.001, 0.01, 0.1], difference in hidden layers [1,2,3] and number of neurons [64,128,256]
