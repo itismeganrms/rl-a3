@@ -45,7 +45,7 @@ This paper explores policy-based reinforcement learning in detail and the common
 \end{abstract}
 
 \section {Introduction}
-In this paper we will delve into the Lunar Lander environment taken from the OpenAI Gym library. The Lunar Lander game is a classical reinforcement learning environment where the goal is to optimise the trajectory of a rocket such that it lands between the two flags.
+In this paper we will delve into the Lunar Lander environment taken from the OpenAI Gym library. The Lunar Lander game is a classical reinforcement learning environment, based on the physics enginge box2d \cite{brockman2016openai} where the goal is to optimise the trajectory of a rocket such that it lands between the two flags.
  While a number of different techniques can be used to solve this problem, our paper specifically concentrates on the use of  \textbf{REINFORCE} and \textbf{Actor-Critic}. Through this paper, we hope to provide the specifications of various Policy Gradient methods while also including the tried and tested hyper-parameters that produce the best results.%$$ best exploration-to-exploitation ratio. \newline
 
 \begin{figure}[htbp]
@@ -91,7 +91,7 @@ For our implementation of Policy Gradient Methods, we used the Python \textbf{Py
 \section{Policy-Based Reinforcement Learning}
 \par The policies we looked at in the previous papers were \emph{value-based}. This means that they looked at state-value pairs in the environment and calculated the rewards of such pairs using different exploration strategies like Boltzmann or Epsilon-Greedy. Policy based reinforcement learning methods differ from value-based method as they do not utilize a value function to determine the next possible action. Used primarily in  continuous action space RL environments, policy based reinforcement learning methods use a parameterized policy function $\pi_\theta$ where $\theta$ represents the parameters of the function. 
 \par During training the agent iteratively interacts with the environment and after a number of episodes the collected data known as the trajectory $\tau$ is evaluated to understand the performance of the policy. 
-\begin{itemize}
+\begin{itemize}[itemsep=0pt]
     \item If $\tau$ yields high rewards then the parameters $\theta$ are adjusted in such a way that the likelihood of taking similar actions as those in $\tau$ is increased.
     \item On the other hand if the trajectory $\tau$ yields lower rewards then $\theta$ is adjusted in such a way that the likelihood of taking similar actions as those in $\tau$ is decreased.
 \end{itemize}  
@@ -101,7 +101,7 @@ This process of iteratively evaluating the trajectories and updating the paramet
 \par
 There are a number of different policy-based reinforcement learning algorithms. However for this paper, we are limiting the scope of our research to the algorithms listed below: 
 
-\begin{itemize}[itemsep=0pt]
+\begin{itemize}[itemsep=0.0pt]
 \item REINFORCE
 \item Actor-Critic with Bootstrapping
 \item Actor-Critic with Baseline Subtraction
@@ -110,7 +110,7 @@ There are a number of different policy-based reinforcement learning algorithms. 
 These algorithms are discussed in the future sections. 
 
 \par For any reinforcement learning algorithm it is necessary to decide on an action selection policy. Traditional action selection algorithms used before such as Boltzmann or E-greedy cannot be used in this paper as they are better suited for value-based reinforcement learning algorithms working with a discrete action space and/or state space. This is because both epsilon-greedy and Boltzman are algorithms that scans potential actions that can be taken by the agent at a particular state and calculates their value, which helps inform the agent's next step. This is not possible in Policy Gradient methods which are less concerned with state-action pairs and more with the policy function. 
-\par Hence, in this paper we work with \textbf{Entropy Regularisation}. Entropy regularisation is an exploration technique that helps balance the exploration to exploitation ratio by encouraging the agent to explore more diverse actions and unfamiliar spaces. It does this by increasing by adding an entropy term to the loss function to promote action diversity and preventing sub-optimising to local rewards. The entropy term is defined in the equation below. %
+\par Hence, in this paper we work with \textbf{Entropy Regularisation}. Entropy regularisation is an exploration technique that helps balance the exploration to exploitation ratio by encouraging the agent to explore more diverse actions and unfamiliar spaces. It does this by increasing by adding an entropy term to the loss function to promote action diversity and preventing sub-optimising to local rewards. The entropy term $H(X)$ is defined in the equation below. %
 
 \begin{equation*}
 H(X) = - \sum \pi(x) log(\pi(x)) %t + 1] 
@@ -120,10 +120,10 @@ where
 \renewcommand\labelitemi{.}
 \item x is the set of possible actions
 \item $\pi(x)$ is a function representing the probability of taking an action x
-\item H(X) is the entropy of the action distribution capturing the randomness of taking an action x
+%\item H(X) is the entropy of the action distribution capturing the randomness of taking an action x
 \end{itemize}
 \subsection{REINFORCE}
-\par REINFORCE is a commonly used Policy-based Reinforcement Learning algorithm which is also termed as a classic Monte-Carlo Policy Gradient algorithm. It was first introduced in 1992 by Ronald J. Williams with an aim to maximise expected cumulative rewards by adjusting the policy parameters. It does this by learning from the agent trajectory (including the visited states, executed actions and incurred rewards) and estimating gradients. Because it needs a full trajectory in order to construct a sample space it is updated as an off-policy algorithm. 
+\par REINFORCE is a commonly used Policy-based Reinforcement Learning algorithm which is also termed as a classic Monte-Carlo Policy Gradient algorithm. \cite{sutton-barlo}. It was first introduced in 1992 by Ronald J. Williams with an aim to maximise expected cumulative rewards by adjusting the policy parameters. It does this by learning from the agent trajectory (including the visited states, executed actions and incurred rewards) and estimating gradients. Because it needs a full trajectory in order to construct a sample space it is updated as an off-policy algorithm. 
 \begin{equation}
 \pi_\theta(a, s) = Pr(A_t = a | St = s, \theta_t = \theta)
 \end{equation}
@@ -146,12 +146,12 @@ where $\nabla J(\theta)$ represents the gradient in the expected return function
 %Based on this, the expected cumulative rewards is updated.
 
 The algorithm for REINFORCE can thus be defined as follows. 
-\begin{algorithm}[htbp]
+\begin{algorithm}[h!]
 \caption{REINFORCE Algorithm}
 \SetAlgoLined
 \DontPrintSemicolon
 \small % Set font size to small
-\KwData{parameter $\theta$, policy function $\pi_\theta$, maximum timesteps $T$, number of episodes $E$, learning_rate $\alpha$ }
+\KwData{parameter $\theta$, policy function $\pi_\theta$, maximum time-steps $T$, number of episodes $E$, learning_rate $\alpha$}
 \KwResult{Selected action}
 Initialise $\theta$ arbitrarily\;\\
 \For{$e = 1$ \KwTo $E$}{
@@ -163,33 +163,33 @@ Initialise $\theta$ arbitrarily\;\\
      \item $\theta \leftarrow \theta + \alpha \cdot \nabla_\theta \log \pi_\theta(a_t | s_t) R(\tau)$;
     }
 }
-Return parameter $\theta$
+Return parameter $\theta$\;
 \end{algorithm}
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.9\linewidth]{Report/images/02.Rewards_of_REINFORCE_without_ER.png}
+\includegraphics[width=0.85\linewidth]{Report/images/02.Rewards_of_REINFORCE_without_ER.png}
 \caption{\label{fig:Reinforce Rewards}The figure above shows the rewards of REINFORCE without entropy regularisation with different learning rates. As we can see, almost all of learning rates show a rising trend of rewards, with the graph for learning rates 0.01 and 0.001 showing the most promise. }
 \end{figure}
 
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.9\linewidth]{Report/images/03.Steps_of_REINFORCE_without_ER.png}
+\includegraphics[width=0.85\linewidth]{Report/images/03.Steps_of_REINFORCE_without_ER.png}
 \caption{\label{fig:ReinforceEntropy_Rewards}The figure above shows the steps of REINFORCE without entropy regularisation with different learning rates. As we can see, almost learning rates show a rising trend of steps, with the graph for learning rates 0.01 and 0.001 showing the most promise. }
 \end{figure}
 \par Figure 2 and 3 shows our results for REINFORCE without entropy regularisation. While REINFORCE is touted as a simpler Policy Gradient method it can often suffer from high variances causing slower convergence to optimal values because it requires an entire episode to be sampled. This is very visible from the results. Even after an average results of over 1000 episodes, we are unable to see a dramatic rise in learning as we expected. However, we can see the effect of learning rate on model performance as learning rates of 0.001 and 0.01 outperform learning rate of 0.1. 
 
-\begin{figure}[!h]
+\begin{figure}[h!]
 \centering
-\includegraphics[width=0.9\linewidth]{Report/images/04.Performance_of_REINFORCE_with_ER_Rewards.png}
+\includegraphics[width=0.85\linewidth]{Report/images/04.Performance_of_REINFORCE_with_ER_Rewards.png}
 \caption{\label{fig:ReinforceEntropy_Rewards_LR}The figure above shows the rewards of REINFORCE with entropy regularisation with different learning rates. As we can see, all learning rates show a rising trend of rewards, with the graph for learning rates 0.01 and 0.001 showing the most improvement and the learning rate 0.1 stabilising but not showing much improvement. }
 \end{figure}
 
 
-\begin{figure}[!h]
+\begin{figure}[h!]
 \centering
-\includegraphics[width=0.9\linewidth]{Report/images/05.Performance_of_REINFORCE_with_ER_Steps.png}
+\includegraphics[width=0.85\linewidth]{Report/images/05.Performance_of_REINFORCE_with_ER_Steps.png}
 \caption{\label{fig:ReinforceEntropy_Rewards_Steps}The figure above shows the total steps of REINFORCE with entropy regularisation with different learning rates. As we can see, all learning rates show a rising trend of rewards, with the graph for learning rates 0.01 and 0.001 showing the most improvement and the learning rate 0.1 stabilising but not showing much improvement. }
 \end{figure}
 \par To improve our existing results we decided to implement a version of REINFORCE that includes entropy regularisation and as seen from our figure 4, the learning is much better and a faster convergence as learning rates begin rising. This is because the inclusion of an entropy term to the loss function helps penalise trajectories with lesser randomness (or entropy) and thus encourages the policy network to explore more diverse state and action spaces, increasing exploration and preventing getting stuck in local maxima. 
@@ -197,7 +197,7 @@ Return parameter $\theta$
 
 \subsection{Actor-Critic Methods}
 \par In the REINFORCE algorithm, we did not observe the fast convergence to optimal values as we hoped. This was probably because in REINFORCE algorithms, the entire episode must be sampled and thus suffers from high variance. In this section we will discuss Actor Critic methods, which provide a solution to combat high variance by combining the advantages of both value-based and policy-based methods and achieve optimal converging rewards. 
-\par Actor Critic methods are Temporal Difference methods and have a separate memory structure to store the policy function independent of the value function. They generally have two neural networks: a policy structure known as an \emph{actor} and an estimated value function known as the \emph{critic}. While the policy function (or actor) returns a probability distribution of actions that can be taken in specific states, a value function (or the critic) determines the expected reward gained by following the policy. Thus the value function is called a critic as it criticises the actions taken by the actor in the form of a TD error. This scalar signal indicates whether the actions taken by the agent are better or worse than what the critic expected. 
+\par Actor Critic methods are Temporal Difference methods and have a separate memory structure to store the policy function independent of the value function. They generally have two neural networks: a policy structure known as an \emph{actor} and an estimated value function known as the \emph{critic}. While the policy function (or actor) returns a probability distribution of actions that can be taken in specific states, a value function (or the critic) determines the expected reward gained by following the policy. \cite{actor-critic}. Thus the value function is called a critic as it criticises the actions taken by the actor in the form of a TD error. This scalar signal indicates whether the actions taken by the agent are better or worse than what the critic expected. 
 \par The TD error can be evaluated as follows in the following equation
 \begin{equation*}
 \delta_{t} = R_{t+1} + \gamma * V_t(S_{t+1})-V_t(S_t)
@@ -216,12 +216,11 @@ Thus, a positive TD error ($\delta_{t}$ \textgreater 0) indicates that the value
 
 \subsubsection{Bootstrapping}
 %\par A variation of Actor-Critic incorporates a bootstrapping technique. In the REINFORCE algorithm, because the entire episode must be sampled, its variance is high. The Actor Critic method combines value-based and policy-based methods, achieving both low variance and low bias. The Actor Critic method incorporates the bootstrapping technique to improve estimates of cumulative rewards. By using bootstrapping, the Actor Critic method can use the Critic's immediate feedback to adjust the Actor's strategy, thus achieving a better balance between exploring the environment and learning optimized action strategies.. 
-\par A variation of Actor-Critic incorporates a bootstrapping technique which combines elements of both policy-based and value-based methods. In this architecture the actor, as usual, learns a parameterized policy function $\pi_\theta$ that maps states to actions. The critic uses bootstrapping to update the value function and estimate the value of the state-action pairs. Thus, instead of waiting for the cumulative rewards from the environment it updates the value function using its own estimates. 
-\par By using bootstrapping, the Actor Critic method can use the Critic's immediate feedback to adjust the Actor's strategy, thus achieving a better balance between exploring the environment and learning optimized action strategies.
+\par A variation of Actor-Critic incorporates a bootstrapping technique which combines elements of both policy-based and value-based methods. In this architecture the actor, as usual, learns a parameterized policy function $\pi_\theta$ that maps states to actions. The critic uses bootstrapping to update the value function and estimate the value of the state-action pairs. Thus, instead of waiting for the cumulative rewards from the environment it updates the value function using its own estimates. By using bootstrapping, the Actor Critic method can use the Critic's immediate feedback to adjust the Actor's strategy, thus achieving a better balance between exploring the environment and learning optimized action strategies.
 The descent advantage loss allows the actor to choose the actions that outperform the baseline by minimising the difference between them, while the ascent policy gradient drives policy updates to maximize the cumulative reward by increasing the likelihood of selecting actions with higher advantages.
 
 The algorithm for Actor-Critic with Bootstrapping is given below \cite{plaat-deeprl}
-\begin{algorithm}[htbp]
+\begin{algorithm}[h!]
 \caption{Actor-Critic with Bootstrapping}
 \SetAlgoLined
 \DontPrintSemicolon
@@ -246,29 +245,26 @@ Initialise $\theta$ and $\phi$ arbitrarily\;\\
 \item \textbf{Return} parameter $\theta$
 \end{algorithm}
 
-Figures 6, 7 and 8 show us the performances of Actor-Critic with bootstrapping when varying different hyper-parameters such as learning rate, the number of hidden layers and the number of neurons. \newline 
-As seen in figure 6 learning rate of 0.005 shows a jump in average returns compared to other learning rates. Furthermore, we can also see in figure 7 that bootstrapping with 2 or 3 hidden layers tends to learn faster than bootstrapping with only one hidden layer. Lastly, figure 8 shows the effects of the number of neurons on learning rate. We can see that neural networks with 64 neurons learn faster than neural networks with 128 or 256 neurons. 
+\par Figures 6, 7 and 8 show us the performances of Actor-Critic with bootstrapping when varying different hyper-parameters such as learning rate, the number of hidden layers and the number of neurons. As seen in figure 6 learning rate of 0.005 shows a jump in average returns compared to other learning rates. Furthermore, we can also see in figure 7 that bootstrapping with 2 or 3 hidden layers tends to learn faster than bootstrapping with only one hidden layer. Lastly, figure 8 shows the effects of the number of neurons on learning rate. We can see that neural networks with 64 neurons learn faster than neural networks with 128 or 256 neurons. While the results do provide some key insights, it is important to note that when averaging rewards in highly stochastic environments can lead to final graphs where the overall increase is not as dramatic.
 
 \begin{figure}[h!]
     \centering
-\includegraphics[width=0.9\linewidth]{Report/images/06.Performance_of_Actor_Critic_BS_LR.png}
+\includegraphics[width=0.85\linewidth]{Report/images/06.Performance_of_Actor_Critic_BS_LR.png}
 \caption{\label{fig:ActorCritic for different learning rates}The figure shows the performance of Actor Critic with bootstrapping while varying learning rates. When the learning rate is set to 0.005, relatively good results are achieved in training the agent. However, after 1000 episodes (averaged over every 5 episodes for a total of 200 averages), the reward still remains below zero. Conversely, when the learning rate is set to a higher value (0.05) or a lower value (0.001), the agent does not train at all.}
 \end{figure}
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.9\linewidth]{Report/images/07.Performance_of_Actor_Critic_BS_Layers.png}
+\includegraphics[width=0.85\linewidth]{Report/images/07.Performance_of_Actor_Critic_BS_Layers.png}
 \caption{\label{fig:ActorCritic for different Hidden Layers}The figure shows the performance of Actor Critic with bootstrapping while varying the number of hidden layers. When both the policy network and the value network have only one hidden layer, the agent cannot be trained, as evidently seen in the graph. Increasing the hidden layers of these two networks can improve the training effect. The graph demonstrates the improvement in performance with more than one hidden layer, with a significantly better reward than with one hidden layer}
 \end{figure}
 
+
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.9\linewidth]{Report/images/08.Performance_of_Actor_Critic_BS_Neurons.png}
+\includegraphics[width=0.85\linewidth]{Report/images/08.Performance_of_Actor_Critic_BS_Neurons.png}
 \caption{\label{fig:ActorCritic for different Neurons}The result of Actor Critic with different neurons. According to results of different network layers, we set both the policy network and the value network to have two hidden layers. The results shows that networks with fewer neurons tend to perform relatively better, but there is still a long way to go before the agent is successfully trained.}
 \end{figure}
-
-While the results do provide some key insights, it is important to note that when averaging rewards in highly stochastic environments can lead to final graphs where the overall increase is not as dramatic.
-
 
 \subsubsection{Baseline Subtraction}
 Actor-Critic algorithms could also employ baseline subtraction which is a technique used to reduce the variance and improve convergence. We recall the previous policy gradient function denoted by 
@@ -284,7 +280,7 @@ The updated policy gradient function after baseline subtraction is shown below.
 \begin{equation*}
 \nabla_\theta J(\theta) = \mathbb{E}_\pi[\sum _{t=0}^{T-1}  \nabla_\theta\log\pi_\theta (a_t|s_t)G_t - b(s_t)]
 \end{equation*}
-\begin{algorithm}[htbp]
+\begin{algorithm}[h!]
 \caption{Actor-Critic with Baseline Subtraction}
 \SetAlgoLined
 \DontPrintSemicolon
@@ -307,28 +303,28 @@ Initialise $\theta$ and $\phi$ arbitrarily\;\\
 }
 \State \Return parameter $\theta$
 \end{algorithm}
-
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.9\linewidth]{Report/images/09.Performance_of_Actor_Critc_BSub_LR.png}
+\includegraphics[width=0.85\linewidth]{Report/images/09.Performance_of_Actor_Critc_BSub_LR.png}
 \caption{\label{fig:ActorCritic with Baseline Subtraction - Variation in Learning Rate}The result of Actor Critic with Baseline Subtraction with different learning rates. 
 When evaluating three different learning rates (0.001, 0.01, 0.1), it was observed that the rate of 0.1 achieved the highest reward after averaging across 200 episodes. The learning rate of 0.001 initially shows slow progress but gradually improves over time. On the other hand, the learning rate of 0.01 results in the poorest performance.}
 \end{figure}
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.9\linewidth]{Report/images/actor_critic_entropy.png}
-\caption{\label{fig:ActorCritic with Baseline Subtraction - Variation in Learning Rate}The result of Actor Critic with Baseline Subtraction and entropy regularization with different learning rates. 
+\includegraphics[width=0.85\linewidth]{Report/images/13.Performance_of_Actor_Critc_BSubandER_LR.png}
+\caption{\label{fig:ActorCritic with Baseline Subtraction and Entropy Regularization - Variation in Learning Rate}The result of Actor Critic with Baseline Subtraction and entropy regularization with different learning rates. 
 When evaluating three different learning rates (0.001, 0.01, 0.1), it was observed that the rate of 0.1 achieved the highest reward after averaging across 200 episodes. The learning rate of 0.001 initially shows slow progress but gradually improves over time. On the other hand, the learning rate of 0.01 results in the poorest performance.}
 \end{figure}
+Figure 9 and Figure 10 compares the performances of Actor-Critic with Baseline Subtraction, with and without entropy regularization. Both agents were tested against learning rates of 0.001, 0.01 and 0.1. As seen from figure 9, the algorithm provided better returns than vanilla Actor-Critic algorithms. However, the rewards were lower than that of entropy regularization. In figure 10, it is evident that the returns are more (comparing the rewards of a learning rate of 0.1). However, a low learning rate such as 0.001 is not beneficial, as the gain is much slower than a learning rate of 0.1. 
 \subsubsection{Bootstrapping and Baseline Subtraction}
 Certain Actor-Critic algorithms combine both bootstrapping and baseline subtraction. They combine the advantages of bootstrapping by using the Critic's feedback to adjust the Actor's strategy and by using baseline subtraction to reduce the variance and keep the rewards small, while maintaining stability. This is achieved by using both descent advantage loss and ascent policy gradient.  
 The equations for Descent Advantage Loss and Ascent Policy Gradient are given below. 
-\par Descent Advantage Loss is given by
+\par Descent Advantage Loss is calculated by 
 \begin{equation*}
 \theta \leftarrow \theta - \alpha * \nabla_\theta\Sigma_t(\hat{A}_n(s_t,a_t))^2
 \end{equation*}
-Ascent Policy Gradient is given by
+Ascent Policy Gradient is calculated by 
 \begin{equation*}
 \theta \leftarrow \theta + \alpha * \Sigma_t[\hat{A}_n(s_t,a_t)*\nabla_\theta\log\pi_\theta(a_t|s_t)]
 \end{equation*}
@@ -342,12 +338,12 @@ Where
 \item $\hat{A}_n(s_t,a_t)$ is the advantage function which represents the estimated advantage of taking an action $a_t$ in the state $s_t$
 \item $\nabla_\theta$ represents the gradient with respect to the policy parameters $\theta$
 \end{itemize}
-Both descent advantage loss and Ascent Policy Gradient uses the advantage function. The advantage function subtracts the value V from a state-action value estimate Q. This allows to estimate how better the action is, compared to the expectation at that state. This is expressed as 
+Both descent advantage loss and ascent policy gradient uses the advantage function. The advantage function subtracts the value V from a state-action value estimate Q. This allows to estimate how better the action is, compared to the expectation at that state. This is expressed as 
 \begin{equation*}
     \hat{A}_n(s_t,a_t) = \hat{Q}_n(s_t,a_t) - V_\phi(s_t)
 \end{equation*}
 to estimate the cumulative reward \(\)
-\begin{algorithm}[htbp]
+\begin{algorithm}[h!]
 \caption{Actor-Critic with Bootstrapping and Baseline Subtraction}
 \SetAlgoLined
 \DontPrintSemicolon
@@ -366,56 +362,46 @@ Initialise $\theta$ and $\phi$ arbitrarily\;\\
      \item Compute advantage function using the cumulative reward and the value function;
      \(\hat{A}_n(s_t,a_t) = \hat{Q}_n(s_t,a_t) - V_\phi(s_t)\)
     }
-    \item Compute Descent Advantage Loss
-    \newline
-     \(\phi \leftarrow \phi - \alpha \cdot \nabla_\theta\Sigma_t(\hat{A}_n(s_t,a_t))^2\) 
-     \item Compute Ascent Policy Gradient
-     \newline 
-    \(\theta \leftarrow \theta + \alpha \cdot \Sigma_t[\hat{A}_n(s_t,a_t)*\nabla_\theta\log\pi_\theta(a_t|s_t)]\)
+    \item Compute Descent Advantage Loss $\phi$
+    %\newline
+     %\(\phi \leftarrow \phi - \alpha \cdot \nabla_\theta\Sigma_t(\hat{A}_n(s_t,a_t))^2\) 
+     \item Compute Ascent Policy Gradient $\theta$
+     %\newline 
+    %\(\theta \leftarrow \theta + \alpha \cdot \Sigma_t[\hat{A}_n(s_t,a_t)*\nabla_\theta\log\pi_\theta(a_t|s_t)]\)
 }
 \State \Return parameter $\theta$
 \end{algorithm}
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.9\linewidth]{Report/images/10.Performance_of_Actor_Critic_BSandBS_LR.png}
-\caption{\label{fig:ActorCriticBS2-different learning rates}The figure above shows the rewards of Actor Critic with Bootstrapping and Baseline Subtraction with different learning rates. The results were averaged over 2 episodes. As seen in the graph, the learning rate of 0.005 show a rising trend in rewards when compared to a learning rate of 0.001 and 0.05}
+\includegraphics[width=0.85\linewidth]{Report/images/10.Performance_of_Actor_Critic_BSandBS_LR.png}
+\caption{\label{fig:ActorCriticBS2-different learning rates}The figure above shows the rewards of Actor Critic with Bootstrapping and Baseline Subtraction with different learning rates. The results were averaged over every 5 episodes. As seen in the graph, the learning rate of 0.005 show a rising trend in rewards when compared to a learning rate of 0.001 and 0.05}
 \end{figure}
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.9\linewidth]{Report/images/11.Performance_of_Actor_Critic_BSandBS_Layers.png}
+\includegraphics[width=0.85\linewidth]{Report/images/11.Performance_of_Actor_Critic_BSandBS_Layers.png}
 \caption{\label{fig:ActorCriticBS2-different neurons}The results of Actor-Critic with Bootstrapping and Baseline Subtraction with variations in number of hidden layers of the policy network and the value network. The results were averaged over 2 episodes. The graph shows comparable performance with 1, 2 and 3 hidden layers, with 1 hidden layer performing slightly better than 2 and 3 hidden layers. }
 \end{figure}
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.9\linewidth]{Report/images/12.Performance_of_Actor_Critic_BSandBS_Neurons.png}
+\includegraphics[width=0.85\linewidth]{Report/images/12.Performance_of_Actor_Critic_BSandBS_Neurons.png}
 \caption{\label{fig:ActorCriticBS2-different hidden layers}The results of Actor-Critic with Bootstrapping and Baseline Subtraction with variations in number of neurons of the policy network and the value network. The results show that the layers with 128 neurons provided better results, when compared to layers with 64 neurons and 256 neurons. When the number of neurons was set to 128, the agent achieved a better reward, reaching a peak value of over 200. In comparison, networks with 64 and 256 neurons achieved slightly poorer training results.}
 \end{figure}
-
+Figures 11, 12 and 13 shows the performances of Actor-Critic with Bootstrapping and Baseline Subtraction when various hyper-parameters are tuned such as learning rate, number of hidden layers and number of neurons. 
+As seen in Figure 11,  a learning rate of 0.1 provides better results when compared to learning rates of 0.001 and 0.01. The learning rate of 0.001 shows slower progress, but improves gradually. From figure 12, it is observed that the number of hidden layers did not play a significant role, surprisingly. All 3 variations performed similarly, with a variation of 1 and 2 hidden layers performing slightly better. The performance of Actor-Critic agents with bootstrapping and baseline subtraction was graphed out in Figure 13. Here, it is seen that 128 is the optimal number, with a steep improvement in performance, as it produced better results, when compared to 64 and 256 neurons. 
 \section{Goals Achieved}
 \subsection{Effects of Policy Gradients of REINFORCE on Variance}
-As we can see from the results of our implementation of REINFORCE, Policy Gradient methods can have a de-stabilising effect on rewards, particularly in high-dimensional state spaces such as Lunar Lander. We can see this with the high amount of noise generated in our average reward and time step plots in figures 2 and 3. This may be because REINFORCE samples entire trajectories (series of states, actions and rewards) stochastically rather than observing the rewards gained from individual states or actions and thus there can be high variability in the returns produced by different trajectories which may only be differ by one action or state. Furthermore, since this environment is more complex than classical environments like CartPole, the probability distribution produced can have a high variance between different state% Policy graThey do this by providing an output of  probability distribution over actions in a certain state and by optimising the stochastic policy function such that actions with more than expected returns are more likely than actions with less than expected returns. This is different from value-based methods that store the value of each state-action pair and select a single deterministic action that is suitable at any state the agent is in.  
+\par As we can see from the results of our implementation of REINFORCE, Policy Gradient methods can have a de-stabilising effect on rewards, particularly in high-dimensional state spaces such as Lunar Lander. We can see this with the high amount of noise generated in our average reward and time step plots in figures 2 and 3. This may be because REINFORCE samples entire trajectories (series of states, actions and rewards) stochastically rather than observing the rewards gained from individual states or actions and thus there can be high variability in the returns produced by different trajectories which may only be differ by one action or state. Furthermore, since this environment is more complex than classical environments like CartPole, the probability distribution produced can have a high variance between different state% Policy graThey do this by providing an output of  probability distribution over actions in a certain state and by optimising the stochastic policy function such that actions with more than expected returns are more likely than actions with less than expected returns. This is different from value-based methods that store the value of each state-action pair and select a single deterministic action that is suitable at any state the agent is in.  
 \par We can see that the implementation of Entropy Regularisation in REINFORCE helps to significantly reduce noise in REINFORCE. This can be seen by the difference in noise in Figure 2 and 4. This is because Entropy Regularisation can help the architecture balance the exploration-to-exploitation ratio, allowing the agent to explore more unfamiliar state spaces in some cases and prioritizing greedy actions in others.
-
 \subsection{Effects of Bootstrapping and Baseline Subtraction On Policy Gradients}
-While bootstrapping is done to reduce the variance of the policy gradient, we observe that bootstrapping itself is not sufficient to help the architecture achieve rewards that converge to a stable optima over time. This is evident from our results in figure 6, 7 and 8. This may be because while bootstrapping tries to bring the advantages of value-based learning to policy-based learning, it may end up doing the exact opposite in the form of higher instability when value estimates are updated based on unstable environment rewards by the critic. This often causes the instability to explode and propagate further. \newline
-However, bootstrapping combined with baseline subtraction works much better than bootstrapping alone. This is shown by our positive results in 10, 11 and 12. This is because the subtraction of a baseline term from estimated advantages helps to compensate for the variance generated by bootstrapping, allowing the estimated advantages to be more stable and accurate, allowing faster convergence.
-
+\par  While bootstrapping is done to reduce the variance of the policy gradient, we observe that bootstrapping itself is not sufficient to help the architecture achieve rewards that converge to a stable optima over time. This is evident from our results in figure 6, 7 and 8. This may be because while bootstrapping tries to bring the advantages of value-based learning to policy-based learning, it may end up doing the exact opposite in the form of higher instability when value estimates are updated based on unstable environment rewards by the critic. This often causes the instability to explode and propagate further. However, bootstrapping combined with baseline subtraction works much better than bootstrapping alone. This is shown by our positive results in 10, 11 and 12. This is because the subtraction of a baseline term from estimated advantages helps to compensate for the variance generated by bootstrapping, allowing the estimated advantages to be more stable and accurate, allowing faster convergence.
 \subsection{Comparison of Performance}
-First, we compared the results of the REINFORCE algorithm. When we used REINFORCE without entropy regularization, we tested three different learning rate settings, and it turns out that the smallest value (0.001) achieved the best results. However, when entropy regularization was added to the model, none of the three learning rates achieved equally good results.\\
-For the Actor-Critic model, the results indicate that using only the bootstrapping technique does not lead to ideal outcomes. Employing only baseline subtraction can result in relatively more satisfactory rewards, but the best approach is to combine these two techniques, which can push the final reward to exceed 200.\\
-Comparing the best outcomes of REINFORCE and Actor-Critic clearly demonstrates the superiority of the Actor-Critic algorithm in our study.\\
-
-
-
-
-
-
-
+\par First, we compared the results of the REINFORCE algorithm. When we used REINFORCE without entropy regularization, we tested three different learning rate settings, and it turns out that the smallest value (0.001) achieved the best results. However, when entropy regularization was added to the model, none of the three learning rates achieved equally good results.
+\par For the Actor-Critic model, the results indicate that using only the bootstrapping technique does not lead to ideal outcomes. Employing only baseline subtraction can result in relatively more satisfactory rewards, but the best approach is to combine these two techniques, which can push the final reward to exceed 200.
+Comparing the best outcomes of REINFORCE and Actor-Critic clearly demonstrates the superiority of the Actor-Critic algorithm in our study.
 \subsection{Effect of entropy regularization on performance}
-
+\par As explained earlier, entropy regularization promotes action diversity. This is evidently seen in Figure 2 and Figure 4 for REINFORCE agent, particularly with a learning rate of 0.01. The REINFORCE agent with entropy regularization provides higher rewards, when compared to the agent without regularization. This is also seen in Figure 9 and Figure 10, actor-critic with baseline subtraction. The actor-critic agents with entropy regularization performed better with learning rates 0.01 and 0.1, than without entropy regularization. The rewards were consistently higher and the curve was more stable. This shows that entropy regularization influences policy optimization and stability of the agents.
 \bibliography{Report/references}
 \bibliographystyle{Report/reference_style}
 \end{document}
-
