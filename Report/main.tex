@@ -169,7 +169,7 @@ Return parameter $\theta$
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.9\linewidth]{Report/images/02.Rewards_of_REINFORCE_without_ER.png}
-\caption{\label{fig:Reinforce Rewards}The figure above shows the rewards of REINFORCE without entropy regularisation with different learning rates. As we can see, almost learning rates show a rising trend of rewards, with the graph for learning rates 0.01 and 0.001 showing the most promise. }
+\caption{\label{fig:Reinforce Rewards}The figure above shows the rewards of REINFORCE without entropy regularisation with different learning rates. As we can see, almost all of learning rates show a rising trend of rewards, with the graph for learning rates 0.01 and 0.001 showing the most promise. }
 \end{figure}
 
 
@@ -311,7 +311,15 @@ Initialise $\theta$ and $\phi$ arbitrarily\;\\
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.9\linewidth]{Report/images/09.Performance_of_Actor_Critc_BSub_LR.png}
-\caption{\label{fig:ActorCritic with Baseline Subtraction - Variation in Learning Rate}The result of Actor Critic with Baseline Subtraction with different neurons. According to results of different network layers, we set both the policy network and the value network to have two hidden layers. The results shows that networks with fewer neurons tend to perform relatively better, but there is still a long way to go before the agent is successfully trained.}
+\caption{\label{fig:ActorCritic with Baseline Subtraction - Variation in Learning Rate}The result of Actor Critic with Baseline Subtraction with different learning rates. 
+When evaluating three different learning rates (0.001, 0.01, 0.1), it was observed that the rate of 0.1 achieved the highest reward after averaging across 200 episodes. The learning rate of 0.001 initially shows slow progress but gradually improves over time. On the other hand, the learning rate of 0.01 results in the poorest performance.}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\linewidth]{Report/images/actor_critic_entropy.png}
+\caption{\label{fig:ActorCritic with Baseline Subtraction - Variation in Learning Rate}The result of Actor Critic with Baseline Subtraction and entropy regularization with different learning rates. 
+When evaluating three different learning rates (0.001, 0.01, 0.1), it was observed that the rate of 0.1 achieved the highest reward after averaging across 200 episodes. The learning rate of 0.001 initially shows slow progress but gradually improves over time. On the other hand, the learning rate of 0.01 results in the poorest performance.}
 \end{figure}
 \subsubsection{Bootstrapping and Baseline Subtraction}
 Certain Actor-Critic algorithms combine both bootstrapping and baseline subtraction. They combine the advantages of bootstrapping by using the Critic's feedback to adjust the Actor's strategy and by using baseline subtraction to reduce the variance and keep the rewards small, while maintaining stability. This is achieved by using both descent advantage loss and ascent policy gradient.  
@@ -370,19 +378,19 @@ Initialise $\theta$ and $\phi$ arbitrarily\;\\
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.9\linewidth]{Report/images/10.Performance_of_Actor_Critic_BSandBS_LR.png}
-\caption{\label{fig:ActorCriticBS2-different learning rates}The figure above shows the rewards of Actor Critic with Bootstrapping and Baseline Subtraction with different learning rates. The results were averaged over 1000 episodes. As seen in the graph, the learning rate of 0.005 show a rising trend in rewards when compared to a learning rate of 0.001 and 0.05}
+\caption{\label{fig:ActorCriticBS2-different learning rates}The figure above shows the rewards of Actor Critic with Bootstrapping and Baseline Subtraction with different learning rates. The results were averaged over 2 episodes. As seen in the graph, the learning rate of 0.005 show a rising trend in rewards when compared to a learning rate of 0.001 and 0.05}
 \end{figure}
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.9\linewidth]{Report/images/11.Performance_of_Actor_Critic_BSandBS_Layers.png}
-\caption{\label{fig:ActorCriticBS2-different neurons}The results of Actor-Critic with Bootstrapping and Baseline Subtraction with variations in number of hidden layers. The results were averaged over 1000 episodes. The graph shows comparable performance with 1 and 2 hidden layers, with 1 hidden layer performing slightly better than 2 hidden layers. }
+\caption{\label{fig:ActorCriticBS2-different neurons}The results of Actor-Critic with Bootstrapping and Baseline Subtraction with variations in number of hidden layers of the policy network and the value network. The results were averaged over 2 episodes. The graph shows comparable performance with 1, 2 and 3 hidden layers, with 1 hidden layer performing slightly better than 2 and 3 hidden layers. }
 \end{figure}
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.9\linewidth]{Report/images/12.Performance_of_Actor_Critic_BSandBS_Neurons.png}
-\caption{\label{fig:ActorCriticBS2-different hidden layers}The results of Actor-Critic with Bootstrapping and Baseline Subtraction with variations in number of neurons. The results show that the layers with 128 neurons provided better results, when compared to layers with 64 neurons and 256 neurons.}
+\caption{\label{fig:ActorCriticBS2-different hidden layers}The results of Actor-Critic with Bootstrapping and Baseline Subtraction with variations in number of neurons of the policy network and the value network. The results show that the layers with 128 neurons provided better results, when compared to layers with 64 neurons and 256 neurons. When the number of neurons was set to 128, the agent achieved a better reward, reaching a peak value of over 200. In comparison, networks with 64 and 256 neurons achieved slightly poorer training results.}
 \end{figure}
 
 \section{Goals Achieved}
@@ -392,10 +400,19 @@ As we can see from the results of our implementation of REINFORCE, Policy Gradie
 
 \subsection{Effects of Bootstrapping and Baseline Subtraction On Policy Gradients}
 While bootstrapping is done to reduce the variance of the policy gradient, we observe that bootstrapping itself is not sufficient to help the architecture achieve rewards that converge to a stable optima over time. This is evident from our results in figure 6, 7 and 8. This may be because while bootstrapping tries to bring the advantages of value-based learning to policy-based learning, it may end up doing the exact opposite in the form of higher instability when value estimates are updated based on unstable environment rewards by the critic. This often causes the instability to explode and propagate further. \newline
-However, bootstrapping combined with baseline subtraction works much better than bootstrapping alone. This is shown by our positive results in 10, 11 and 12. This is because the subtraction of a baseline term from estimated advantages helps to compensate for the bias generated by bootstrapping, allowing the estimated advantages to be more stable and accurate, allowing faster convergence.
+However, bootstrapping combined with baseline subtraction works much better than bootstrapping alone. This is shown by our positive results in 10, 11 and 12. This is because the subtraction of a baseline term from estimated advantages helps to compensate for the variance generated by bootstrapping, allowing the estimated advantages to be more stable and accurate, allowing faster convergence.
 
 \subsection{Comparison of Performance}
-From our results two algorithms stand out with the highest rewards: Actor-Critic with Bootstrapping and Baseline Subtraction and Actor-Critic with Baseline Subtraction respectively. Actor-Critic with Bootstrapping and Baseline Subtraction 
+First, we compared the results of the REINFORCE algorithm. When we used REINFORCE without entropy regularization, we tested three different learning rate settings, and it turns out that the smallest value (0.001) achieved the best results. However, when entropy regularization was added to the model, none of the three learning rates achieved equally good results.\\
+For the Actor-Critic model, the results indicate that using only the bootstrapping technique does not lead to ideal outcomes. Employing only baseline subtraction can result in relatively more satisfactory rewards, but the best approach is to combine these two techniques, which can push the final reward to exceed 200.\\
+Comparing the best outcomes of REINFORCE and Actor-Critic clearly demonstrates the superiority of the Actor-Critic algorithm in our study.\\
+
+
+
+
+
+
+
 \subsection{Effect of entropy regularization on performance}
 
 \bibliography{Report/references}
