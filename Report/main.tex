@@ -41,22 +41,15 @@ Assignment 3: Policy-based Reinforcement Learning}
 ]
 
 \begin{abstract}
-This paper explores policy-based reinforcement learning in detail and the commonly used algorithms in policy-based learning. We explore this in one of the OpenAI Gym Libraries - Lunar Lander. We implement algorithms such as REINFORCE, Actor-Critic and their specifications and also delve further into the effects of bootstrapping and baseline subtraction on actor-critic networks. We compare and contrast the performances of the algorithms with variations in learning rate, hidden layers and number of neurons. We also analyze the effects of entropy regularization on these algorithms and compare the performances of the algorithms with and without entropy regularization. 
+In this paper we explored Policy-based Reinforcement Learning as a paradigm of reinforcement learning architectures and the various algorithms within it. The environment we focused on is one of the OpenAI Gym Libraries - Lunar Lander. We implemented algorithms such as REINFORCE, Actor-Critic and their specifications and also delve further into the effects of bootstrapping and baseline subtraction on actor-critic networks. We found that Actor-Critic with bootstrapping and baseline subtraction performs the best. Furthermore, we found that learning rates have a significant effect on performance here as well with a learning rate of 0.001 and 0.01 performing much better than a learning rate of 0.1. We also compared and contrasted the performances of the algorithms when the architecture of the neural network is varied, specifically the number of hidden layers and number of neurons. We also analyze the effects of entropy regularization on these algorithms and found that algorithms perform better with entropy regularisation than without. 
 \end{abstract}
 
 \section {Introduction}
 In this paper we will delve into the Lunar Lander environment taken from the OpenAI Gym library. The Lunar Lander game is a classical reinforcement learning environment, based on the physics enginge box2d \cite{brockman2016openai} where the goal is to optimise the trajectory of a rocket such that it lands between the two flags.
  While a number of different techniques can be used to solve this problem, our paper specifically concentrates on the use of  \textbf{REINFORCE} and \textbf{Actor-Critic}. Through this paper, we hope to provide the specifications of various Policy Gradient methods while also including the tried and tested hyper-parameters that produce the best results.%$$ best exploration-to-exploitation ratio. \newline
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.7\linewidth]{Report/images/01.visualisation.png}
-\caption{\label{fig:Visualization of the Cart-pole} A visualisation of the Lunar Lander problem}
-\end{figure}
-
 %\label{Introduction and General Strategy}
 
-The Lunar Lander environment poses a number of unique challenges compared to the environments we have encountered previously. As shown in \emph{Table 1}, while the action space $A$ is still discrete with four potential actions, the observation space is an 8-dimensional vector comprising of the positional coordinates of the lunar lander (x and y), its linear velocities in x and in y respectively, its angle, its angular velocities and two boolean values that represent whether each leg is in contact with the ground or not. The inclusion of a continuous action or state space makes tabular/value-based reinforcement learning algorithms quickly unfeasible as the cost of storing the values for each state-action pair makes our problem much more complex. 
+The Lunar Lander environment poses a number of unique challenges compared to the environments we have encountered previously. While the action space $A$ is still discrete with four potential actions, the observation space is an 8-dimensional vector comprising of the positional coordinates of the lunar lander (x and y), its linear velocities in x and in y respectively, its angle, its angular velocities and two boolean values that represent whether each leg is in contact with the ground or not. The inclusion of a continuous action or state space makes tabular/value-based reinforcement learning algorithms quickly unfeasible as the cost of storing the values for each state-action pair makes our problem much more complex. 
 \par Thus, to tackle this problem we use Policy Gradient methods which can handle continuous state and action spaces much better, as they directly optimise the expected return and can provide continuous action distributions as output, making them also suitable for continuous action spaces.
 
 \begin{table}[htbp]
@@ -107,9 +100,9 @@ There are a number of different policy-based reinforcement learning algorithms. 
 \item Actor-Critic with Baseline Subtraction
 \item Actor Critic with Bootstrapping and Baseline Subtraction
 \end{itemize}
-These algorithms are discussed in the future sections. 
+These algorithms are discussed in further sections. 
 
-\par For any reinforcement learning algorithm it is necessary to decide on an action selection policy. Traditional action selection algorithms used before such as Boltzmann or E-greedy cannot be used in this paper as they are better suited for value-based reinforcement learning algorithms working with a discrete action space and/or state space. This is because both epsilon-greedy and Boltzman are algorithms that scans potential actions that can be taken by the agent at a particular state and calculates their value, which helps inform the agent's next step. This is not possible in Policy Gradient methods which are less concerned with state-action pairs and more with the policy function. 
+\par For any reinforcement learning algorithm it is necessary to decide on an action selection policy. Traditional action selection algorithms used before such as Boltzmann or E-greedy cannot be used in this paper as they are better suited for value-based reinforcement learning algorithms working with a discrete action space and/or state space. This is because both these algorithms scans potential actions that can be taken by the agent at a particular state and calculates their value, which helps inform the agent's next step. This is not possible in Policy Gradient methods which are less concerned with state-action pairs and more with the policy function. 
 \par Hence, in this paper we work with \textbf{Entropy Regularisation}. Entropy regularisation is an exploration technique that helps balance the exploration to exploitation ratio by encouraging the agent to explore more diverse actions and unfamiliar spaces. It does this by increasing by adding an entropy term to the loss function to promote action diversity and preventing sub-optimising to local rewards. The entropy term $H(X)$ is defined in the equation below. %
 
 \begin{equation*}
@@ -122,8 +115,9 @@ where
 \item $\pi(x)$ is a function representing the probability of taking an action x
 %\item H(X) is the entropy of the action distribution capturing the randomness of taking an action x
 \end{itemize}
+
 \subsection{REINFORCE}
-\par REINFORCE is a commonly used Policy-based Reinforcement Learning algorithm which is also termed as a classic Monte-Carlo Policy Gradient algorithm. \cite{sutton-barlo}. It was first introduced in 1992 by Ronald J. Williams with an aim to maximise expected cumulative rewards by adjusting the policy parameters. It does this by learning from the agent trajectory (including the visited states, executed actions and incurred rewards) and estimating gradients. Because it needs a full trajectory in order to construct a sample space it is updated as an off-policy algorithm. 
+\par REINFORCE is a commonly used Policy-based Reinforcement Learning algorithm which is also termed as a classic Monte-Carlo Policy Gradient algorithm. It was first introduced in 1992 by Ronald J. Williams with an aim to maximise expected cumulative rewards by adjusting the policy parameters \citep{ronaldwilliams}. It does this by learning from the agent trajectory (including the visited states, executed actions and incurred rewards) and estimating gradients. Because it needs a full trajectory in order to construct a sample space it is updated as an off-policy algorithm \citep{sutton-barlo}. 
 \begin{equation}
 \pi_\theta(a, s) = Pr(A_t = a | St = s, \theta_t = \theta)
 \end{equation}
@@ -192,7 +186,7 @@ Return parameter $\theta$\;
 \includegraphics[width=0.85\linewidth]{Report/images/05.Performance_of_REINFORCE_with_ER_Steps.png}
 \caption{\label{fig:ReinforceEntropy_Rewards_Steps}The figure above shows the total steps of REINFORCE with entropy regularisation with different learning rates. As we can see, all learning rates show a rising trend of rewards, with the graph for learning rates 0.01 and 0.001 showing the most improvement and the learning rate 0.1 stabilising but not showing much improvement. }
 \end{figure}
-\par To improve our existing results we decided to implement a version of REINFORCE that includes entropy regularisation and as seen from our figure 4, the learning is much better and a faster convergence as learning rates begin rising. This is because the inclusion of an entropy term to the loss function helps penalise trajectories with lesser randomness (or entropy) and thus encourages the policy network to explore more diverse state and action spaces, increasing exploration and preventing getting stuck in local maxima. 
+\par To improve our existing results we decided to implement a version of REINFORCE that includes entropy regularisation and as seen from our figure 4, we reach higher cumulative rewards, touching 100 and there is more stability in our results.This is because the inclusion of an entropy term to the loss function helps penalise trajectories with lesser randomness (or entropy) and thus encourages the policy network to explore more diverse state and action spaces, increasing exploration and preventing getting stuck in local maxima. 
   
 
 \subsection{Actor-Critic Methods}
